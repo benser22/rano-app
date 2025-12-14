@@ -37,13 +37,6 @@ COPY --from=builder /app/favicon.png ./
 RUN mkdir -p /app/node_modules/@strapi/admin/dist/server/server/build && \
     cp -r /app/dist/build/* /app/node_modules/@strapi/admin/dist/server/server/build/
 
-# Create app directory permission
-RUN addgroup --system --gid 1001 strapi
-RUN adduser --system --uid 1001 strapi
-RUN chown -R strapi:strapi /app
-
-USER strapi
-
 EXPOSE 1337
 
 CMD ["npm", "run", "start"]
