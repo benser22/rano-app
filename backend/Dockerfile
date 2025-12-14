@@ -33,6 +33,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/favicon.png ./
 
+# Remove all TypeScript files from src to avoid conflicts with compiled JS
+RUN find /app/src -type f -name "*.ts" -delete
+
 # Copy admin build to where Strapi expects it in production
 RUN mkdir -p /app/node_modules/@strapi/admin/dist/server/server/build && \
     cp -r /app/dist/build/* /app/node_modules/@strapi/admin/dist/server/server/build/
