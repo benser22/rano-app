@@ -27,6 +27,7 @@ COPY --from=builder /app/node_modules ./node_modules
 # Strapi start command uses built files.
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/config ./config
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/favicon.png ./
