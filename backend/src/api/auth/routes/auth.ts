@@ -1,14 +1,14 @@
-/**
- * Custom auth routes
- */
-export default {
+import type { Core } from "@strapi/strapi";
+
+const config: Core.RouterConfig = {
+  type: "content-api",
   routes: [
     {
       method: "POST",
       path: "/auth/google/callback",
       handler: "auth.googleCallback",
       config: {
-        auth: false, // This route is public
+        auth: false,
         policies: [],
         middlewares: [],
       },
@@ -16,4 +16,4 @@ export default {
   ],
 };
 
-export const type = "content-api";
+export default config;

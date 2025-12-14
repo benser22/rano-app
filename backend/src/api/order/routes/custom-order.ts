@@ -1,11 +1,14 @@
-export default {
+import type { Core } from "@strapi/strapi";
+
+const config: Core.RouterConfig = {
+  type: "content-api",
   routes: [
     {
       method: "POST",
       path: "/orders/checkout",
       handler: "custom-order.checkout",
       config: {
-        auth: false, // Or true if requiring login
+        auth: false,
       },
     },
     {
@@ -20,4 +23,4 @@ export default {
   ],
 };
 
-export const type = "content-api";
+export default config;

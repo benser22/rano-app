@@ -1,4 +1,7 @@
-export default {
+import type { Core } from "@strapi/strapi";
+
+const config: Core.RouterConfig = {
+  type: "content-api",
   routes: [
     {
       method: "POST",
@@ -12,4 +15,4 @@ export default {
   ],
 };
 
-export const type = "content-api";
+export default config;
