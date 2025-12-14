@@ -9,6 +9,8 @@ RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Increase Node.js heap size for build to prevent out of memory errors
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 FROM node:20-alpine AS runner
