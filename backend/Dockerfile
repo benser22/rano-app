@@ -32,6 +32,18 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/favicon.png ./
 
+# Copy only schema.json files from src (content type definitions)
+# This avoids TS/JS conflicts while keeping content types visible
+COPY --from=builder /app/src/api/*/content-types/*/schema.json /tmp/schemas/
+RUN mkdir -p /app/src/api && \
+    cd /tmp/schemas && \
+    for schema in */schema.json; do \
+        dir=$(dirname $schema); \
+        mkdir -p /app/src/api/$dir; \
+        cp $schema /app/src/api/$dir/; \
+    done && \
+    rm -rf /tmp/schemas
+
 # Copy admin build to where Strapi expects it in production
 RUN mkdir -p /app/node_modules/@strapi/admin/dist/server/server/build && \
     cp -r /app/dist/build/* /app/node_modules/@strapi/admin/dist/server/server/build/
