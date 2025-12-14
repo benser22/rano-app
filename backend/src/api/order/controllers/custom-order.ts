@@ -102,7 +102,7 @@ export default {
     );
 
     const order = await strapi.entityService.create("api::order.order", {
-      data: orderData,
+      data: orderData as any,
     });
 
     console.log("Order created:", JSON.stringify(order, null, 2));
@@ -147,7 +147,7 @@ export default {
         await strapi.entityService.update("api::product.product", idToUpdate, {
           data: {
             stock: validStock,
-          },
+          } as any,
         });
         strapi.log.info(
           `FAILSAFE STOCK UPDATE: ${productFound.name} -> New Stock: ${validStock}`,
