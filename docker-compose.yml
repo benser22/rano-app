@@ -29,7 +29,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "1337:1337"
+      - "4001:1337"
     volumes:
       - strapi_uploads:/app/public/uploads
     healthcheck:
@@ -45,27 +45,29 @@ services:
     container_name: tienda_frontend
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:1337}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4001}
     ports:
-      - "3000:3000"
+      - "4000:3000"
     depends_on:
       strapi:
         condition: service_healthy
 
-  nginx:
-    image: nginx:alpine
-    container_name: tienda_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - certbot_data:/var/www/certbot
-    depends_on:
-      - frontend
-      - strapi
+  # Nginx deshabilitado - acceso directo por puertos
+  # Descomentar cuando se configure el dominio y SSL
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: tienda_nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #     - certbot_data:/var/www/certbot
+  #   depends_on:
+  #     - frontend
+  #     - strapi
 
 volumes:
   postgres_data:
