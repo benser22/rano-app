@@ -20,8 +20,19 @@ jobs:
           script: |
             cd ~/rano-app
             git pull origin main
+
+            # Pre-deploy cleanup: remove build cache to free space
+            docker builder prune -f
+
             docker-compose down
             docker-compose build
             docker-compose up -d
+
+            # Post-deploy cleanup: remove dangling images and unused networks
+            docker image prune -f
+            docker network prune -f
+
             echo "Deployment completed successfully!"
             docker-compose ps
+            echo "Disk usage:"
+            df -h | head -3
