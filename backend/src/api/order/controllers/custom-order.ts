@@ -96,26 +96,15 @@ export default {
       };
     }
 
-    console.log(
-      "Creating order with data:",
-      JSON.stringify(orderData, null, 2),
-    );
-
     const order = await strapi.entityService.create("api::order.order", {
-      data: orderData as any,
+      data: orderData,
     });
 
-    console.log("Order created:", JSON.stringify(order, null, 2));
-
     // Deduct stock (Reservation strategy)
-    console.log("Starting stock deduction for order:", order.id);
     for (const item of orderItems) {
       try {
         // En Strapi v5, findOne suele requerir documentId. Si item.product es numerico (ID SQL),
         // es mas seguro usar db.query para obtener el documentId primero.
-        console.log(
-          `Processing deduction for product ID (SQL): ${item.product}, Qty: ${item.quantity}`,
-        );
 
         // Intento buscar por ID SQL directo usando query engine que es agnóstico
         const productFound = await strapi.db
@@ -132,10 +121,6 @@ export default {
           continue;
         }
 
-        console.log(
-          `Product found: ${productFound.name}, Current Stock: ${productFound.stock}, DocumentID: ${productFound.documentId}`,
-        );
-
         const newStock = productFound.stock - item.quantity;
         const validStock = newStock >= 0 ? newStock : 0;
 
@@ -147,7 +132,7 @@ export default {
         await strapi.entityService.update("api::product.product", idToUpdate, {
           data: {
             stock: validStock,
-          } as any,
+          },
         });
         strapi.log.info(
           `FAILSAFE STOCK UPDATE: ${productFound.name} -> New Stock: ${validStock}`,
@@ -169,8 +154,7 @@ export default {
       const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
       const webhookUrl = process.env.WEBHOOK_URL;
 
-      console.log("Creating MP preference with frontendUrl:", frontendUrl);
-      if (webhookUrl) console.log("Using webhookUrl:", webhookUrl);
+      // Creando preferencia de MP con frontendUrl y webhookUrl (logs removidos)
 
       const result = await preference.create({
         body: {
