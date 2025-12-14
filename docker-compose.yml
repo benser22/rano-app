@@ -11,11 +11,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5434:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-tienda_user}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   strapi:
     build:
@@ -26,17 +21,11 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     ports:
       - "4001:1337"
     volumes:
       - strapi_uploads:/app/public/uploads
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1337"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   frontend:
     build:
@@ -49,8 +38,7 @@ services:
     ports:
       - "4000:3000"
     depends_on:
-      strapi:
-        condition: service_healthy
+      - strapi
 
   # Nginx deshabilitado - acceso directo por puertos
   # Descomentar cuando se configure el dominio y SSL
