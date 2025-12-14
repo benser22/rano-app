@@ -11,3 +11,5 @@ export default {
     },
   ],
 };
+
+export const type = "content-api";
