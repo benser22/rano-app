@@ -18,7 +18,7 @@ export function MobileSearch() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Buscar productos">
           <Search className="h-5 w-5" />
         </Button>
       </DialogTrigger>
@@ -26,8 +26,8 @@ export function MobileSearch() {
         <DialogHeader>
           <DialogTitle>Buscar productos</DialogTitle>
         </DialogHeader>
-        <SearchCombobox 
-          className="w-full" 
+        <SearchCombobox
+          className="w-full"
           onClose={() => setOpen(false)}
         />
       </DialogContent>

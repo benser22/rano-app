@@ -28,10 +28,10 @@ function SuccessContent() {
         <div className="h-20 w-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 className="h-10 w-10 text-green-600" />
         </div>
-        
+
         <h1 className="text-2xl font-bold mb-2">¡Pago Exitoso!</h1>
         <p className="text-muted-foreground mb-6">
-          Tu pedido fue procesado correctamente. Te enviamos un email con los detalles.
+          Tu pedido fue procesado correctamente. Podés ver los detalles en tu historial de compras.
         </p>
 
         {externalReference && (

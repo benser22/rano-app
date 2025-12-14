@@ -12,12 +12,12 @@ import { Separator } from '@/components/ui/separator';
 import { getMediaUrl } from '@/lib/api/strapi';
 import { ImgWithFallback } from '@/components/ui/image-with-fallback';
 import { toast } from 'sonner';
-import { 
-  ChevronRight, 
-  Loader2, 
-  ShoppingBag, 
-  CreditCard, 
-  Truck, 
+import {
+  ChevronRight,
+  Loader2,
+  ShoppingBag,
+  CreditCard,
+  Truck,
   ShieldCheck,
   ArrowLeft
 } from 'lucide-react';
@@ -25,8 +25,8 @@ import {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotal, clearCart } = useCartStore();
-  const { user, isAuthenticated } = useAuthStore();
-  
+  const { user, isAuthenticated, token } = useAuthStore();
+
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: Shipping, 2: Review
   const [formData, setFormData] = useState({
@@ -38,6 +38,8 @@ export default function CheckoutPage() {
     province: '',
     zip: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Pre-fill email if logged in
   useEffect(() => {
@@ -50,15 +52,81 @@ export default function CheckoutPage() {
   }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
-  const validateShipping = () => {
-    if (!formData.email || !formData.name || !formData.address || !formData.city || !formData.zip) {
-      toast.error('Por favor completá todos los campos requeridos');
-      return false;
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, formData[name as keyof typeof formData]);
+  };
+
+  const validateField = (name: string, value: string): boolean => {
+    let error = '';
+
+    switch (name) {
+      case 'email':
+        if (!value) error = 'El email es requerido';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Email inválido';
+        break;
+      case 'name':
+        if (!value) error = 'El nombre es requerido';
+        else if (value.length < 2) error = 'Nombre muy corto';
+        break;
+      case 'phone':
+        if (!value) error = 'El teléfono es requerido';
+        else if (!/^\d{8,15}$/.test(value.replace(/\D/g, ''))) error = 'Teléfono inválido';
+        break;
+      case 'address':
+        if (!value) error = 'La dirección es requerida';
+        break;
+      case 'city':
+        if (!value) error = 'La ciudad es requerida';
+        break;
+      case 'zip':
+        if (!value) error = 'El código postal es requerido';
+        else if (!/^\d{4,5}$/.test(value)) error = 'Código postal inválido (4-5 dígitos)';
+        break;
     }
-    return true;
+
+    setErrors(prev => ({ ...prev, [name]: error }));
+    return !error;
+  };
+
+  const validateShipping = (): boolean => {
+    const requiredFields = ['email', 'name', 'phone', 'address', 'city', 'zip'];
+    let isValid = true;
+    let firstErrorField = '';
+
+    // Mark all required fields as touched
+    const newTouched: Record<string, boolean> = {};
+    requiredFields.forEach(field => { newTouched[field] = true; });
+    setTouched(prev => ({ ...prev, ...newTouched }));
+
+    // Validate each field
+    for (const field of requiredFields) {
+      const valid = validateField(field, formData[field as keyof typeof formData]);
+      if (!valid && !firstErrorField) {
+        firstErrorField = field;
+        isValid = false;
+      } else if (!valid) {
+        isValid = false;
+      }
+    }
+
+    // Focus first error field
+    if (firstErrorField) {
+      const element = document.getElementById(firstErrorField);
+      element?.focus();
+      toast.error('Por favor completá todos los campos requeridos');
+    }
+
+    return isValid;
   };
 
   const handleContinue = () => {
@@ -72,7 +140,9 @@ export default function CheckoutPage() {
 
     try {
       const { strapi } = await import('@/lib/api/strapi');
-      
+
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+
       const { data } = await strapi.post('/orders/checkout', {
         items: items.map(i => ({ id: i.id, quantity: i.quantity })),
         email: formData.email,
@@ -84,7 +154,7 @@ export default function CheckoutPage() {
           province: formData.province,
           zip: formData.zip,
         },
-      });
+      }, config);
 
       if (data.init_point) {
         // Redirect to MercadoPago
@@ -101,7 +171,9 @@ export default function CheckoutPage() {
   };
 
   const subtotal = getTotal();
-  const shipping = subtotal >= 50000 ? 0 : 5000;
+  const freeShippingMin = parseInt(process.env.NEXT_PUBLIC_FREE_SHIPPING_MIN || '30000');
+  const shippingCost = parseInt(process.env.NEXT_PUBLIC_SHIPPING_COST || '5000');
+  const shipping = subtotal >= freeShippingMin ? 0 : shippingCost;
   const total = subtotal + shipping;
 
   if (items.length === 0) {
@@ -171,7 +243,9 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className={touched.email && errors.email ? 'text-destructive' : ''}>
+                      Email *
+                    </Label>
                     <Input
                       id="email"
                       name="email"
@@ -179,56 +253,90 @@ export default function CheckoutPage() {
                       placeholder="tu@email.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      required
+                      onBlur={handleBlur}
+                      autoComplete="email"
+                      className={touched.email && errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.email && errors.email && (
+                      <p className="text-xs text-destructive">{errors.email}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nombre completo *</Label>
+                    <Label htmlFor="name" className={touched.name && errors.name ? 'text-destructive' : ''}>
+                      Nombre completo *
+                    </Label>
                     <Input
                       id="name"
                       name="name"
                       placeholder="Juan Pérez"
                       value={formData.name}
                       onChange={handleInputChange}
-                      required
+                      onBlur={handleBlur}
+                      autoComplete="name"
+                      className={touched.name && errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.name && errors.name && (
+                      <p className="text-xs text-destructive">{errors.name}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono</Label>
+                    <Label htmlFor="phone" className={touched.phone && errors.phone ? 'text-destructive' : ''}>
+                      Teléfono *
+                    </Label>
                     <Input
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder="+54 11 1234-5678"
+                      placeholder="3815555555"
                       value={formData.phone}
                       onChange={handleInputChange}
+                      onBlur={handleBlur}
+                      autoComplete="tel"
+                      className={touched.phone && errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.phone && errors.phone && (
+                      <p className="text-xs text-destructive">{errors.phone}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="address">Dirección *</Label>
+                    <Label htmlFor="address" className={touched.address && errors.address ? 'text-destructive' : ''}>
+                      Dirección *
+                    </Label>
                     <Input
                       id="address"
                       name="address"
-                      placeholder="Av. Corrientes 1234, Piso 5, Depto A"
+                      placeholder="Av. Belgrano 1234, Piso 2, Depto B"
                       value={formData.address}
                       onChange={handleInputChange}
-                      required
+                      onBlur={handleBlur}
+                      autoComplete="street-address"
+                      className={touched.address && errors.address ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.address && errors.address && (
+                      <p className="text-xs text-destructive">{errors.address}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="city">Ciudad *</Label>
+                    <Label htmlFor="city" className={touched.city && errors.city ? 'text-destructive' : ''}>
+                      Ciudad *
+                    </Label>
                     <Input
                       id="city"
                       name="city"
-                      placeholder="Buenos Aires"
+                      placeholder="San Miguel de Tucumán"
                       value={formData.city}
                       onChange={handleInputChange}
-                      required
+                      onBlur={handleBlur}
+                      autoComplete="address-level2"
+                      className={touched.city && errors.city ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.city && errors.city && (
+                      <p className="text-xs text-destructive">{errors.city}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -236,33 +344,41 @@ export default function CheckoutPage() {
                     <Input
                       id="province"
                       name="province"
-                      placeholder="CABA"
+                      placeholder="Tucumán"
                       value={formData.province}
                       onChange={handleInputChange}
+                      autoComplete="address-level1"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="zip">Código Postal *</Label>
+                    <Label htmlFor="zip" className={touched.zip && errors.zip ? 'text-destructive' : ''}>
+                      Código Postal *
+                    </Label>
                     <Input
                       id="zip"
                       name="zip"
-                      placeholder="1414"
+                      placeholder="4000"
                       value={formData.zip}
                       onChange={handleInputChange}
-                      required
+                      onBlur={handleBlur}
+                      autoComplete="postal-code"
+                      className={touched.zip && errors.zip ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.zip && errors.zip && (
+                      <p className="text-xs text-destructive">{errors.zip}</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex gap-4 mt-8">
                   <Link href="/carrito">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 h-12">
                       <ArrowLeft className="h-4 w-4" />
                       Volver
                     </Button>
                   </Link>
-                  <Button onClick={handleContinue} className="flex-1 gap-2">
+                  <Button onClick={handleContinue} className="flex-1 gap-2 h-12">
                     Continuar
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -297,7 +413,7 @@ export default function CheckoutPage() {
                 {/* Items */}
                 <div className="space-y-3 mb-6">
                   {items.map((item) => {
-                    const imageUrl = item.image ? getMediaUrl(item.image) : '/placeholder.png';
+                    const imageUrl = item.image ? getMediaUrl(item.image) : '/avif/placeholder.avif';
                     return (
                       <div key={item.id} className="flex items-center gap-3 py-2">
                         <div className="w-16 h-16 bg-muted rounded-md overflow-hidden shrink-0">
@@ -323,13 +439,13 @@ export default function CheckoutPage() {
 
                 {/* Payment Button */}
                 <div className="flex gap-4">
-                  <Button variant="outline" onClick={() => setStep(1)} className="gap-2">
+                  <Button variant="outline" onClick={() => setStep(1)} className="gap-2 h-12">
                     <ArrowLeft className="h-4 w-4" />
                     Volver
                   </Button>
-                  <Button 
-                    onClick={handlePayment} 
-                    className="flex-1 gap-2 h-12 text-base"
+                  <Button
+                    onClick={handlePayment}
+                    className="flex-1 gap-3 h-12 text-base"
                     disabled={loading}
                   >
                     {loading ? (
@@ -339,8 +455,8 @@ export default function CheckoutPage() {
                       </>
                     ) : (
                       <>
-                        <CreditCard className="h-5 w-5" />
-                        Pagar con MercadoPago
+                        <img src="/mp_logo.png" alt="MercadoPago" className="h-6 w-auto" />
+                        Pagar
                       </>
                     )}
                   </Button>
@@ -367,7 +483,7 @@ export default function CheckoutPage() {
           <div>
             <div className="bg-card rounded-xl shadow-sm p-6 sticky top-24">
               <h3 className="font-bold text-lg mb-4">Resumen del Pedido</h3>
-              
+
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
@@ -382,8 +498,9 @@ export default function CheckoutPage() {
                   </span>
                 </div>
                 {shipping > 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    🚚 Envío gratis en compras mayores a $50.000
+                  <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
+                    <Truck className="h-4 w-4" />
+                    Envío gratis en compras mayores a ${freeShippingMin.toLocaleString('es-AR')}
                   </p>
                 )}
               </div>

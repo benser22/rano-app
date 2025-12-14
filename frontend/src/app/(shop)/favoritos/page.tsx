@@ -85,8 +85,8 @@ export default function FavoritesPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((item) => {
-            const imageUrl = item.image ? getMediaUrl(item.image) : '/placeholder.png';
-            
+            const imageUrl = item.image ? getMediaUrl(item.image) : '/avif/placeholder.avif';
+
             return (
               <div key={item.id} className="bg-card rounded-xl shadow-sm overflow-hidden group">
                 {/* Image */}
@@ -120,8 +120,8 @@ export default function FavoritesPage() {
                     ${item.price.toLocaleString('es-AR')}
                   </p>
 
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="w-full mt-3 gap-2"
                     onClick={() => handleAddToCart(item)}
                   >
@@ -136,8 +136,8 @@ export default function FavoritesPage() {
 
         {items.length > 0 && (
           <div className="mt-8 text-center">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 clearWishlist();
                 toast.success('Lista de favoritos vaciada');

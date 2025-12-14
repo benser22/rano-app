@@ -20,9 +20,9 @@ export function WishlistButton({ product, variant = 'icon', className }: Wishlis
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     toggleItem(product);
-    
+
     if (inWishlist) {
       toast.success('Eliminado de favoritos', { description: product.name });
     } else {
@@ -48,16 +48,17 @@ export function WishlistButton({ product, variant = 'icon', className }: Wishlis
     <Button
       variant="ghost"
       size="icon"
+      aria-label={inWishlist ? 'Eliminar de favoritos' : 'Agregar a favoritos'}
       className={cn(
-        'h-9 w-9 rounded-full transition-all',
-        inWishlist 
-          ? 'bg-primary/10 text-primary hover:bg-primary/20' 
-          : 'hover:bg-muted',
+        'h-10 w-10 rounded-full transition-all shadow-sm bg-white/90 hover:bg-white',
+        inWishlist
+          ? 'text-red-500 hover:text-red-600'
+          : 'text-gray-600 hover:text-red-500',
         className
       )}
       onClick={handleClick}
     >
-      <Heart className={cn('h-5 w-5', inWishlist && 'fill-current text-primary')} />
+      <Heart className={cn('h-6 w-6', inWishlist && 'fill-current')} />
     </Button>
   );
 }

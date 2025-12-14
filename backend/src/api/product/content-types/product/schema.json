@@ -38,13 +38,16 @@
     },
     "stock": {
       "type": "integer",
-      "default": 0
+      "default": 0,
+      "min": 0
     },
     "images": {
       "type": "media",
       "multiple": true,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "category": {
       "type": "relation",
@@ -60,10 +63,10 @@
       "type": "json"
     },
     "colors": {
-       "type": "json"
+      "type": "json"
     },
     "tags": {
-       "type": "json"
+      "type": "json"
     }
   }
 }

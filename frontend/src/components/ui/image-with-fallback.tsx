@@ -13,7 +13,7 @@ interface ImageWithFallbackProps extends Omit<ImageProps, 'onError'> {
 export function ImageWithFallback({
   src,
   alt,
-  fallbackSrc = '/placeholder.png',
+  fallbackSrc = '/avif/placeholder.avif',
   ...props
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src);
@@ -40,7 +40,7 @@ export function ImageWithFallback({
 export function ImgWithFallback({
   src,
   alt,
-  fallbackSrc = '/placeholder.png',
+  fallbackSrc = '/avif/placeholder.avif',
   className,
   ...props
 }: React.ImgHTMLAttributes<HTMLImageElement> & { fallbackSrc?: string }) {

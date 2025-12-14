@@ -28,7 +28,15 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": ["pending", "paid", "shipped", "delivered", "cancelled", "rejected", "refunded"],
+      "enum": [
+        "pending",
+        "paid",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "rejected",
+        "refunded"
+      ],
       "default": "pending"
     },
     "paymentId": {
@@ -42,7 +50,7 @@
       "type": "json"
     },
     "email": {
-        "type": "email"
+      "type": "email"
     }
   }
 }

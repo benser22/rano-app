@@ -5,13 +5,16 @@ import { PriceDisplay } from '@/components/products/PriceDisplay';
 import { ImgWithFallback } from '@/components/ui/image-with-fallback';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Truck, RefreshCw, Shield, ChevronRight } from 'lucide-react';
+import { Truck, RefreshCw, Shield, ChevronRight, ArrowRight } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import ProductCard from '@/components/products/ProductCard';
+import { ProductGallery } from '@/components/products/ProductGallery';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
+
+import { Metadata, ResolvingMetadata } from 'next';
 
 async function getProduct(slug: string) {
   const data = await fetchAPI('/products', {
@@ -45,6 +48,43 @@ async function getRelatedProducts(categorySlug: string, currentProductId: number
   }
 }
 
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const product = await getProduct(resolvedParams.slug);
+
+  if (!product) {
+    return {
+      title: 'Producto no encontrado | Rano Urban',
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images || [];
+  const mainImage = product.images && product.images.length > 0
+    ? getMediaUrl(product.images[0].url)
+    : '/avif/placeholder.avif';
+
+  return {
+    title: product.name,
+    description: product.description || `Compra ${product.name} en Rano Urban. Lo mejor del streetwear argentino.`,
+    openGraph: {
+      title: product.name,
+      description: product.description || `Compra ${product.name} en Rano Urban.`,
+      images: [mainImage!, ...previousImages],
+      type: 'article',
+      publishedTime: product.publishedAt,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: product.description || `Compra ${product.name} en Rano Urban.`,
+      images: [mainImage!],
+    },
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const resolvedParams = await params;
   const product = await getProduct(resolvedParams.slug);
@@ -53,15 +93,15 @@ export default async function ProductPage({ params }: Props) {
     notFound();
   }
 
-  const relatedProducts = product.category 
+  const relatedProducts = product.category
     ? await getRelatedProducts(product.category.slug, product.id)
     : [];
 
-  const mainImage = product.images && product.images.length > 0 
-    ? getMediaUrl(product.images[0].url) 
-    : '/placeholder.png';
+  const mainImage = product.images && product.images.length > 0
+    ? getMediaUrl(product.images[0].url)
+    : '/avif/placeholder.avif';
 
-  const hasDiscount = product.comparePrice && product.comparePrice > product.price;
+  const hasDiscount = !!(product.comparePrice && product.comparePrice > product.price);
 
   return (
     <div className="min-h-screen">
@@ -75,7 +115,7 @@ export default async function ProductPage({ params }: Props) {
             {product.category && (
               <>
                 <ChevronRight className="h-4 w-4" />
-                <Link 
+                <Link
                   href={`/productos?category=${product.category.slug}`}
                   className="hover:text-foreground transition-colors"
                 >
@@ -92,57 +132,28 @@ export default async function ProductPage({ params }: Props) {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-square bg-muted rounded-xl overflow-hidden">
-              <ImgWithFallback
-                src={mainImage || ''}
-                alt={product.name}
-                className="object-cover w-full h-full"
-              />
-              {hasDiscount && (
-                <span className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  -{Math.round(((product.comparePrice! - product.price) / product.comparePrice!) * 100)}%
-                </span>
-              )}
-            </div>
-            
-            {/* Thumbnails */}
-            {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
-                {product.images.slice(0, 4).map((img, idx) => (
-                  <div 
-                    key={idx}
-                    className={`aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer border-2 ${
-                      idx === 0 ? 'border-primary' : 'border-transparent hover:border-muted-foreground/30'
-                    }`}
-                  >
-                    <ImgWithFallback
-                      src={getMediaUrl(img.url) || ''}
-                      alt={`${product.name} - ${idx + 1}`}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProductGallery
+            images={product.images || []}
+            productName={product.name}
+            hasDiscount={hasDiscount}
+            discountPercentage={hasDiscount ? Math.round(((product.comparePrice! - product.price) / product.comparePrice!) * 100) : 0}
+          />
 
           {/* Product Details */}
           <div className="space-y-6">
             {/* Category */}
             {product.category && (
-              <Link 
+              <Link
                 href={`/productos?category=${product.category.slug}`}
                 className="text-sm text-primary hover:underline"
               >
                 {product.category.name}
               </Link>
             )}
-            
+
             {/* Title */}
             <h1 className="text-3xl md:text-4xl font-bold">{product.name}</h1>
-            
+
             {/* Price */}
             <PriceDisplay
               price={product.price}
@@ -176,7 +187,7 @@ export default async function ProductPage({ params }: Props) {
                 <p>{product.description}</p>
               ) : (
                 <p>
-                  Producto de alta calidad de la línea Rano Urban. 
+                  Producto de alta calidad de la línea Rano Urban.
                   Diseño exclusivo con materiales premium para máxima comodidad.
                 </p>
               )}
@@ -192,19 +203,12 @@ export default async function ProductPage({ params }: Props) {
             <Separator />
 
             {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <Truck className="h-5 w-5 text-primary shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium">Envío gratis</p>
                   <p className="text-muted-foreground">+$50.000</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <RefreshCw className="h-5 w-5 text-primary shrink-0" />
-                <div className="text-sm">
-                  <p className="font-medium">Cambios</p>
-                  <p className="text-muted-foreground">30 días</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
@@ -232,11 +236,14 @@ export default async function ProductPage({ params }: Props) {
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold">Productos Relacionados</h2>
               {product.category && (
-                <Link 
+                <Link
                   href={`/productos?category=${product.category.slug}`}
                   className="text-primary hover:underline text-sm"
                 >
-                  Ver más →
+                  <div className="flex items-center gap-2">
+                    Ver más
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </div>
                 </Link>
               )}
             </div>

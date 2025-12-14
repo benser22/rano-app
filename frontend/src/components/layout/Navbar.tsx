@@ -12,13 +12,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/co
 import { UserDropdown } from '@/components/auth/UserDropdown';
 import { SearchCombobox } from '@/components/search/SearchCombobox';
 import { MobileSearch } from '@/components/search/MobileSearch';
-
-const categories = [
-  { name: 'Remeras', slug: 'remeras' },
-  { name: 'Gorras', slug: 'gorras' },
-  { name: 'Buzos', slug: 'buzos' },
-  { name: 'Accesorios', slug: 'accesorios' },
-];
+import { NAVBAR_CATEGORIES } from '@/constants/store';
 
 const Navbar = () => {
   const [mounted, setMounted] = useState(false);
@@ -33,18 +27,13 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        {/* Top bar - optional promo */}
-        <div className="hidden md:block text-center py-1.5 text-xs text-muted-foreground border-b">
-          🚚 Envío gratis en compras mayores a $50.000
-        </div>
-        
         {/* Main navbar */}
         <div className="h-16 flex items-center justify-between gap-4">
           {/* Mobile Menu */}
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="Abrir menú">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -57,7 +46,7 @@ const Navbar = () => {
                     Todos los productos
                   </Link>
                   <div className="h-px bg-border" />
-                  {categories.map((cat) => (
+                  {NAVBAR_CATEGORIES.map((cat) => (
                     <Link
                       key={cat.slug}
                       href={`/productos?category=${cat.slug}`}
@@ -81,8 +70,8 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image
-              src="/rano_logo.png"
-              alt="Rano Urban"
+              src="/webp/rano_logo.webp"
+              alt=""
               width={40}
               height={40}
               className="h-10 w-10"
@@ -100,7 +89,7 @@ const Navbar = () => {
             >
               Tienda
             </Link>
-            {categories.map((cat) => (
+            {NAVBAR_CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={`/productos?category=${cat.slug}`}
@@ -115,20 +104,20 @@ const Navbar = () => {
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Search - Desktop */}
             <SearchCombobox className="hidden lg:block w-64" />
-            
+
             {/* Search - Mobile */}
             <MobileSearch />
 
             {/* Wishlist */}
             <Link href="/favoritos">
-              <Button variant="ghost" size="icon" className="relative hidden sm:flex">
-                <Heart className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="relative hidden sm:flex" aria-label="Ver favoritos">
+                <Heart className="h-6 w-6" />
                 {mounted && wishlistCount > 0 && (
-                  <Badge 
+                  <Badge
                     variant="secondary"
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px]"
+                    className="absolute -top-0.5 -right-0.5 h-4 w-4 flex items-center justify-center p-0 text-[9px] font-bold"
                   >
-                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                    {wishlistCount > 9 ? '9+' : wishlistCount}
                   </Badge>
                 )}
               </Button>
@@ -139,10 +128,10 @@ const Navbar = () => {
 
             {/* Cart */}
             <Link href="/carrito">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative" aria-label="Ver carrito">
                 <ShoppingCart className="h-5 w-5" />
                 {mounted && cartCount > 0 && (
-                  <Badge 
+                  <Badge
                     className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary"
                   >
                     {cartCount > 99 ? '99+' : cartCount}

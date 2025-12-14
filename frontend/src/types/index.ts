@@ -24,6 +24,9 @@ export interface Product {
   images?: Image[];
   category?: Category;
   featured?: boolean;
+  publishedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CartItem extends Product {

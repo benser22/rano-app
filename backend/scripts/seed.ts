@@ -284,7 +284,8 @@ const bcrypt = require('bcryptjs');
             
             // Check if product exists
             const existing = await strapi.db.query('api::product.product').findOne({ 
-                where: { slug: productFields.slug } 
+                where: { slug: productFields.slug },
+                populate: ['images']
             });
             
             if (!existing) {
@@ -296,19 +297,42 @@ const bcrypt = require('bcryptjs');
                     continue;
                 }
 
-                // Strapi v5: Use connect with documentId for relations
-                const created = await strapi.documents('api::product.product').create({
-                    data: {
-                        ...productFields,
-                        // For many-to-one relation, use connect syntax
-                        category: {
-                            connect: [{ documentId: category.documentId }]
-                        }
-                    },
-                    status: 'published'
-                });
+                // Upload images
+                console.log(`  > Uploading images for ${productFields.name}...`);
+                const imageIds = [];
+                // Create 4 images for slider
+                const colors = ['252f3f', '1e3a8a', '065f46', '991b1b']; 
+                
+                for (let i = 0; i < 4; i++) {
+                    const color = colors[i % colors.length];
+                    const imgName = `${productFields.slug}-img-${i + 1}.png`;
+                    const imgUrl = `https://placehold.co/600x800/${color}/ffffff/png?text=${encodeURIComponent(productFields.name)}+${i+1}`;
+                    
+                    const uploaded = await uploadImage(strapi, imgUrl, imgName);
+                    if (uploaded) {
+                        imageIds.push(uploaded.id); // Use integer ID for media field
+                    }
+                }
 
-                console.log(`✓ Created product: ${productFields.name} (${productFields.sku}) -> ${categorySlug}`);
+                // Strapi v5: Use connect with documentId for relations
+                try {
+                    const created = await strapi.documents('api::product.product').create({
+                        data: {
+                            ...productFields,
+                            // For many-to-one relation, use connect syntax
+                            category: {
+                                connect: [{ documentId: category.documentId }]
+                            },
+                            // Attach images - trying with integer IDs directly
+                            images: imageIds 
+                        },
+                        status: 'published'
+                    });
+                    console.log(`✓ Created product: ${productFields.name} (${productFields.sku}) -> ${categorySlug} with ${imageIds.length} images`);
+                } catch (err) {
+                    console.error(`Error creating product ${productFields.name}:`, JSON.stringify(err.details || err, null, 2));
+                    // Allow to continue with other products if one fails
+                }
             } else {
                 console.log(`○ Product exists: ${productFields.name}`);
             }
@@ -369,6 +393,69 @@ const bcrypt = require('bcryptjs');
     } catch (error) {
         console.error('❌ Seeder failed:', error);
     } finally {
+        // Destroy Strapi instance to close DB connections
+        strapi.destroy(); 
         process.exit(0);
     }
 })();
+
+// Helper to upload image from URL (Manual Fallback)
+async function uploadImage(strapi, imageUrl, name) {
+    const fs = require('fs');
+    const path = require('path');
+    
+    try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+        
+        const buffer = Buffer.from(await response.arrayBuffer());
+        
+        // Ensure public/uploads exists
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const ext = path.extname(name);
+        // Generate unique hash using timestamp
+        const hash = path.basename(name, ext) + '_' + Date.now();
+        const fileName = `${hash}${ext}`;
+        const filePath = path.join(uploadsDir, fileName);
+
+        // Write file to public/uploads
+        fs.writeFileSync(filePath, buffer);
+        const stats = fs.statSync(filePath);
+
+        const mime = response.headers.get('content-type') || 'image/png';
+
+        // Create DB entry directly
+        const createdFile = await strapi.db.query('plugin::upload.file').create({
+            data: {
+                name: name,
+                alternativeText: name,
+                caption: name,
+                width: 600,
+                height: 800,
+                formats: null, // Skip format generation for seeder
+                hash: hash,
+                ext: ext,
+                mime: mime,
+                size: stats.size / 1000,
+                url: `/uploads/${fileName}`,
+                previewUrl: null,
+                provider: 'local',
+                provider_metadata: null,
+                folderPath: '/',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                // folder: 1 // Might need a folder ID if folders are enabled, but usually optional
+            }
+        });
+
+        return createdFile;
+
+    } catch (error) {
+        console.error(`Error uploading image ${name}:`, error);
+        return null;
+    }
+}

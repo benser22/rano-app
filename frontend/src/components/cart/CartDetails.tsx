@@ -49,9 +49,9 @@ const CartDetails = () => {
           <h2 className="text-lg font-semibold">
             {items.length} {items.length === 1 ? 'producto' : 'productos'}
           </h2>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="text-destructive hover:text-destructive"
             onClick={() => {
               clearCart();
@@ -63,24 +63,24 @@ const CartDetails = () => {
         </div>
 
         {items.map((item) => (
-          <div 
-            key={item.id} 
+          <div
+            key={item.id}
             className="flex gap-4 bg-card p-4 rounded-xl shadow-sm"
           >
             {/* Image */}
             <Link href={`/productos/${item.slug}`} className="shrink-0">
               <div className="w-24 h-24 md:w-32 md:h-32 bg-muted rounded-lg overflow-hidden">
                 {item.images && item.images.length > 0 ? (
-                  <ImgWithFallback 
-                    src={getMediaUrl(item.images[0].url) || ''} 
-                    alt={item.name} 
-                    className="object-cover w-full h-full hover:scale-105 transition-transform" 
+                  <ImgWithFallback
+                    src={getMediaUrl(item.images[0].url) || ''}
+                    alt={item.name}
+                    className="object-cover w-full h-full hover:scale-105 transition-transform"
                   />
                 ) : (
-                  <ImgWithFallback 
-                    src="/placeholder.png" 
-                    alt={item.name} 
-                    className="object-cover w-full h-full" 
+                  <ImgWithFallback
+                    src="/avif/placeholder.avif"
+                    alt={item.name}
+                    className="object-cover w-full h-full"
                   />
                 )}
               </div>
@@ -102,10 +102,10 @@ const CartDetails = () => {
               {/* Quantity Controls */}
               <div className="flex items-center gap-3 mt-2">
                 <div className="flex items-center border rounded-lg">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 rounded-r-none" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-r-none"
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                   >
                     <Minus className="h-3 w-3" />
@@ -113,20 +113,20 @@ const CartDetails = () => {
                   <span className="w-10 text-center text-sm font-medium">
                     {item.quantity}
                   </span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8 rounded-l-none" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-l-none"
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                   >
                     <Plus className="h-3 w-3" />
                   </Button>
                 </div>
 
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive" 
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   onClick={() => handleRemove(item.id, item.name)}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -148,7 +148,7 @@ const CartDetails = () => {
       <div className="lg:col-span-1">
         <div className="bg-card rounded-xl p-6 shadow-sm sticky top-24">
           <h2 className="text-xl font-bold mb-6">Resumen del Pedido</h2>
-          
+
           {/* Coupon */}
           <div className="flex gap-2 mb-6">
             <Input placeholder="Código de descuento" className="flex-1" />

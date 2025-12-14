@@ -28,7 +28,7 @@ export function UserDropdown() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" aria-label="Menú de usuario">
             <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
@@ -51,7 +51,7 @@ export function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" className="relative" aria-label="Menú de usuario">
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
             {user.username?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
           </div>
@@ -82,7 +82,7 @@ export function UserDropdown() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer gap-2 text-destructive focus:text-destructive"
           onClick={handleLogout}
         >

@@ -17,7 +17,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -41,14 +41,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       toast.error('Por favor, completá todos los campos');
       return;
     }
 
     const success = await login(formData.email, formData.password);
-    
+
     if (success) {
       toast.success('¡Bienvenido de vuelta!');
       router.push('/');
@@ -67,7 +67,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image
-              src="/rano_logo.png"
+              src="/webp/rano_logo.webp"
               alt="Rano Urban"
               width={48}
               height={48}

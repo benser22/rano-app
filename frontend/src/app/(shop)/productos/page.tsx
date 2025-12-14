@@ -1,10 +1,10 @@
-import Link from 'next/link';
-import { Metadata } from 'next';
-import { fetchAPI } from '@/lib/api/strapi';
 import { ProductGrid } from '@/components/products/ProductGrid';
-import { Product, Category } from '@/types';
-import { Button } from '@/components/ui/button';
+import { fetchAPI } from '@/lib/api/strapi';
+import { Category, Product } from '@/types';
 import { Search } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { getCategoryName } from '@/constants/store';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,7 +132,7 @@ export default async function ProductsPage({ searchParams }: Props) {
             {category && (
               <>
                 <span className="mx-2">/</span>
-                <span className="text-secondary-foreground capitalize">{category}</span>
+                <span className="text-secondary-foreground">{getCategoryName(category)}</span>
               </>
             )}
             {search && (
@@ -149,7 +149,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                 Resultados para "{search}"
               </span>
             ) : (
-              <span className="capitalize">{category || 'Todos los Productos'}</span>
+              <span>{category ? getCategoryName(category) : 'Todos los Productos'}</span>
             )}
           </h1>
           <p className="text-secondary-foreground/70 mt-2">

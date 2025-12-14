@@ -17,7 +17,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading, error, clearError, isAuthenticated } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -43,7 +43,7 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.username || !formData.email || !formData.password) {
       toast.error('Por favor, completá todos los campos');
       return;
@@ -60,7 +60,7 @@ export default function RegisterPage() {
     }
 
     const success = await register(formData.username, formData.email, formData.password);
-    
+
     if (success) {
       toast.success('¡Cuenta creada exitosamente!');
       router.push('/');
@@ -78,7 +78,7 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image
-              src="/rano_logo.png"
+              src="/webp/rano_logo.webp"
               alt="Rano Urban"
               width={48}
               height={48}

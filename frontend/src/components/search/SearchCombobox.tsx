@@ -16,10 +16,10 @@ interface SearchComboboxProps {
   onClose?: () => void;
 }
 
-export function SearchCombobox({ 
-  className = '', 
+export function SearchCombobox({
+  className = '',
   placeholder = 'Buscar productos...',
-  onClose 
+  onClose
 }: SearchComboboxProps) {
   const router = useRouter();
   const [query, setQuery] = useState('');
@@ -114,7 +114,6 @@ export function SearchCombobox({
         <Input
           ref={inputRef}
           type="search"
-          
           placeholder={placeholder}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -152,10 +151,10 @@ export function SearchCombobox({
             <>
               <ul className="divide-y">
                 {results.map((product) => {
-                  const imageUrl = product.images?.[0]?.url 
-                    ? getMediaUrl(product.images[0].url) 
-                    : '/placeholder.png';
-                  
+                  const imageUrl = product.images?.[0]?.url
+                    ? getMediaUrl(product.images[0].url)
+                    : '/avif/placeholder.avif';
+
                   return (
                     <li key={product.id}>
                       <Link

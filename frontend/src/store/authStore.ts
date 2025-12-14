@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface User {
   id: number;
@@ -17,21 +17,27 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isHydrated: boolean; // New: tracks if store is hydrated from localStorage
   error: string | null;
 }
 
 interface AuthActions {
   login: (email: string, password: string) => Promise<boolean>;
-  register: (username: string, email: string, password: string) => Promise<boolean>;
+  register: (
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<boolean>;
   logout: () => void;
   setUser: (user: User, token: string) => void;
   clearError: () => void;
   checkAuth: () => Promise<void>;
+  setHydrated: (state: boolean) => void;
 }
 
 type AuthStore = AuthState & AuthActions;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 export const useAuthStore = create<AuthStore>()(
   persist(
@@ -40,15 +46,16 @@ export const useAuthStore = create<AuthStore>()(
       token: null,
       isAuthenticated: false,
       isLoading: false,
+      isHydrated: false, // Start as not hydrated
       error: null,
 
       login: async (identifier: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
           const response = await fetch(`${API_URL}/api/auth/local`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ identifier, password }),
           });
@@ -56,7 +63,7 @@ export const useAuthStore = create<AuthStore>()(
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.error?.message || 'Error al iniciar sesión');
+            throw new Error(data.error?.message || "Error al iniciar sesión");
           }
 
           set({
@@ -69,7 +76,8 @@ export const useAuthStore = create<AuthStore>()(
 
           return true;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Error al iniciar sesión';
+          const message =
+            error instanceof Error ? error.message : "Error al iniciar sesión";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -79,9 +87,9 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
         try {
           const response = await fetch(`${API_URL}/api/auth/local/register`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ username, email, password }),
           });
@@ -89,7 +97,7 @@ export const useAuthStore = create<AuthStore>()(
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.error?.message || 'Error al registrarse');
+            throw new Error(data.error?.message || "Error al registrarse");
           }
 
           set({
@@ -102,7 +110,8 @@ export const useAuthStore = create<AuthStore>()(
 
           return true;
         } catch (error) {
-          const message = error instanceof Error ? error.message : 'Error al registrarse';
+          const message =
+            error instanceof Error ? error.message : "Error al registrarse";
           set({ isLoading: false, error: message });
           return false;
         }
@@ -146,7 +155,7 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (!response.ok) {
-            throw new Error('Token inválido');
+            throw new Error("Token inválido");
           }
 
           const user = await response.json();
@@ -155,17 +164,25 @@ export const useAuthStore = create<AuthStore>()(
           set({ user: null, token: null, isAuthenticated: false });
         }
       },
+
+      setHydrated: (state: boolean) => {
+        set({ isHydrated: state });
+      },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+      onRehydrateStorage: () => (state) => {
+        // Called after storage is rehydrated
+        state?.setHydrated(true);
+      },
+    },
+  ),
 );
 
 // Helper to get auth header
