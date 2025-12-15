@@ -129,7 +129,8 @@ export default {
         // Switching to numeric ID.
         const idToUpdate = productFound.id;
 
-        await strapi.entityService.update("api::product.product", idToUpdate, {
+        await strapi.db.query("api::product.product").update({
+          where: { id: idToUpdate },
           data: {
             stock: validStock,
           },

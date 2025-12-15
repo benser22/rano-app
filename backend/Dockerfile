@@ -20,13 +20,19 @@ FROM node:20-alpine AS runner
 RUN apk add --no-cache vips-dev
 WORKDIR /app
 
-# runner stage
+# Copiar dependencias
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+
+
+# Copiar todo el directorio dist (contiene build/, config/, src/)
+COPY --from=builder /app/dist ./
+
+# Copiar public y package.json
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
+
 ENV NODE_ENV=production
 EXPOSE 1337
 
-# Usar el script "start" del package.json; asegúrate que arranque desde dist
+# Usar el script "start" del package.json
 CMD ["npm", "run", "start"]
