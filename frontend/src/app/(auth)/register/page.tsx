@@ -68,7 +68,7 @@ export default function RegisterPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/api/connect/google`;
+    window.location.href = `${API_URL}/api/connect/google?prompt=select_account`;
   };
 
   return (

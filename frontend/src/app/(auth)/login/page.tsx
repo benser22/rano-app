@@ -57,7 +57,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     // Redirect to Strapi Google OAuth endpoint
-    window.location.href = `${API_URL}/api/connect/google`;
+    window.location.href = `${API_URL}/api/connect/google?prompt=select_account`;
   };
 
   return (
