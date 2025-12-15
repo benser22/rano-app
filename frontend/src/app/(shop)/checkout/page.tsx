@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
+import { useStoreConfig } from '@/lib/useStoreConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -170,10 +171,9 @@ export default function CheckoutPage() {
     }
   };
 
+  const { config } = useStoreConfig();
   const subtotal = getTotal();
-  const freeShippingMin = parseInt(process.env.NEXT_PUBLIC_FREE_SHIPPING_MIN || '30000');
-  const shippingCost = parseInt(process.env.NEXT_PUBLIC_SHIPPING_COST || '5000');
-  const shipping = subtotal >= freeShippingMin ? 0 : shippingCost;
+  const shipping = subtotal >= config.freeShippingMin ? 0 : config.shippingCost;
   const total = subtotal + shipping;
 
   if (items.length === 0) {
@@ -500,7 +500,7 @@ export default function CheckoutPage() {
                 {shipping > 0 && (
                   <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
                     <Truck className="h-4 w-4" />
-                    Envío gratis en compras mayores a ${freeShippingMin.toLocaleString('es-AR')}
+                    Envío gratis en compras mayores a ${config.freeShippingMin.toLocaleString('es-AR')}
                   </p>
                 )}
               </div>

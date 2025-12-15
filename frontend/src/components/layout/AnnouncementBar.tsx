@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Truck, MapPin } from 'lucide-react';
 import Image from 'next/image';
-
-const freeShippingMin = parseInt(process.env.NEXT_PUBLIC_FREE_SHIPPING_MIN || '50000');
+import { useStoreConfig } from '@/lib/useStoreConfig';
 
 type AnnouncementItem = {
   icon?: React.ComponentType<{ className?: string }>;
@@ -12,24 +11,26 @@ type AnnouncementItem = {
   text: string;
 };
 
-const announcements: AnnouncementItem[] = [
-  {
-    icon: Truck,
-    text: `Envío gratis en compras mayores a $${freeShippingMin.toLocaleString('es-AR')}`,
-  },
-  {
-    image: '/mp_logo.png',
-    text: 'Comprá fácil con Mercado Pago',
-  },
-  {
-    icon: MapPin,
-    text: 'Av. Belgrano 3659, San Miguel de Tucumán',
-  },
-];
-
 export default function AnnouncementBar() {
+  const { config } = useStoreConfig();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+
+  // Build announcements dynamically from config
+  const announcements: AnnouncementItem[] = useMemo(() => [
+    {
+      icon: Truck,
+      text: `Envío gratis en compras mayores a $${config.freeShippingMin.toLocaleString('es-AR')}`,
+    },
+    {
+      image: '/mp_logo.png',
+      text: 'Comprá fácil con Mercado Pago',
+    },
+    {
+      icon: MapPin,
+      text: config.address || 'Av. Belgrano 3659, San Miguel de Tucumán',
+    },
+  ], [config.freeShippingMin, config.address]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -41,7 +42,7 @@ export default function AnnouncementBar() {
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [announcements.length]);
 
   const current = announcements[currentIndex];
   const CurrentIcon = current.icon;
@@ -51,8 +52,8 @@ export default function AnnouncementBar() {
       <div className="container mx-auto flex items-center justify-center">
         <div
           className={`flex items-center gap-2 text-sm font-medium transition-all duration-500 ease-in-out ${isExiting
-              ? 'translate-x-full opacity-0'
-              : 'translate-x-0 opacity-100'
+            ? 'translate-x-full opacity-0'
+            : 'translate-x-0 opacity-100'
             }`}
           style={{
             animation: isExiting ? 'none' : 'slideIn 0.5s ease-out'

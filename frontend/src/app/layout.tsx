@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
+import ClientProviders from '@/components/providers/ClientProviders';
 import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -56,27 +57,29 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <div className="flex flex-col min-h-screen">
-          <AnnouncementBar />
-          <Navbar />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </div>
-        <WhatsAppButton />
-        <Toaster
-          position="bottom-right"
-          richColors
-          closeButton
-          toastOptions={{
-            style: {
-              background: 'var(--card)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
-            },
-          }}
-        />
+        <ClientProviders>
+          <div className="flex flex-col min-h-screen">
+            <AnnouncementBar />
+            <Navbar />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </div>
+          <WhatsAppButton />
+          <Toaster
+            position="bottom-right"
+            richColors
+            closeButton
+            toastOptions={{
+              style: {
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground)',
+              },
+            }}
+          />
+        </ClientProviders>
       </body>
     </html>
   );

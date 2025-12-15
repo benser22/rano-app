@@ -1,0 +1,53 @@
+{
+  "kind": "singleType",
+  "collectionName": "store_configs",
+  "info": {
+    "singularName": "store-config",
+    "pluralName": "store-configs",
+    "displayName": "Configuración de la Tienda",
+    "description": "Configuración general de la tienda (contacto, envíos, horarios)"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "storeName": {
+      "type": "string",
+      "default": "Rano Urban"
+    },
+    "whatsappNumber": {
+      "type": "string",
+      "default": "3815010399"
+    },
+    "contactEmail": {
+      "type": "email",
+      "default": "info@ranourban.com"
+    },
+    "freeShippingMin": {
+      "type": "integer",
+      "default": 30000
+    },
+    "shippingCost": {
+      "type": "integer",
+      "default": 1500
+    },
+    "hoursWeekdays": {
+      "type": "string",
+      "default": "Lunes a Viernes: 9:00 - 20:00"
+    },
+    "hoursSaturday": {
+      "type": "string",
+      "default": "Sábados: 10:00 - 14:00"
+    },
+    "instagramUrl": {
+      "type": "string"
+    },
+    "facebookUrl": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    }
+  }
+}

@@ -36,11 +36,10 @@ export default {
         name: "users-permissions",
       });
 
-      // Get all permissions
-      const allPermissions = await strapi
-        .plugin("users-permissions")
-        .service("permission")
-        .findMany();
+      // Get all permissions from database (Strapi v5)
+      const allPermissions = await strapi.db
+        .query("plugin::users-permissions.permission")
+        .findMany({});
 
       // Filter permissions we want to enable
       const permissionsToEnable = allPermissions.filter((permission) => {
@@ -107,6 +106,7 @@ export default {
           "api::product.product": ["find", "findOne"],
           "api::category.category": ["find", "findOne"],
           "api::order.custom-order": ["checkout"], // Custom controller
+          "api::store-config.store-config": ["find"], // Store configuration
           // Standard order actions usually hidden/restricted for public
         });
       }
