@@ -31,6 +31,9 @@ COPY --from=builder /app/dist ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 
+# Copiar favicon a la raíz (koa-favicon lo busca ahí)
+COPY --from=builder /app/public/favicon.ico ./favicon.ico
+
 ENV NODE_ENV=production
 EXPOSE 1337
 
