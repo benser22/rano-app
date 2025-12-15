@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Rano Urban | Streetwear con Estilo',
+    default: 'Rano Urban | Precio y calidad',
     template: '%s | Rano Urban',
   },
   description: 'Tienda de ropa urbana argentina. Remeras, gorras, buzos y accesorios con diseños exclusivos de streetwear.',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: 'Rano Urban | Streetwear con Estilo',
+    title: 'Rano Urban | Precio y calidad',
     description: 'Tienda de ropa urbana argentina. Remeras, gorras, buzos y accesorios con diseños exclusivos.',
     type: 'website',
     locale: 'es_AR',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Rano Urban | Streetwear con Estilo',
+    title: 'Rano Urban | Precio y calidad',
     description: 'Tienda de ropa urbana argentina. Diseños exclusivos de streetwear.',
   },
   icons: {
@@ -65,7 +65,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <WhatsAppButton />
-        <Toaster 
+        <Toaster
           position="bottom-right"
           richColors
           closeButton
