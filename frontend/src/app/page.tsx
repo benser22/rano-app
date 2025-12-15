@@ -66,7 +66,7 @@ export default async function Home() {
             <div className="space-y-6">
               <div className="inline-block">
                 <span className="px-4 py-2 bg-primary/20 text-muted rounded-full text-sm font-medium backdrop-blur-sm">
-                  Precios que sorprenden
+                  ¡Precios que sorprenden!
                 </span>
               </div>
 
