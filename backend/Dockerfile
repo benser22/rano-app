@@ -20,16 +20,12 @@ FROM node:20-alpine AS runner
 RUN apk add --no-cache vips-dev
 WORKDIR /app
 
-# Aseguramos modo producción
-ENV NODE_ENV=production
-
-# Copiamos solo lo que el runtime necesita
+# runner stage
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/favicon.png ./
-
+ENV NODE_ENV=production
 EXPOSE 1337
 
 # Usar el script "start" del package.json; asegúrate que arranque desde dist
