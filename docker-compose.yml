@@ -31,6 +31,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://rano-api.22studios.xyz}
     container_name: tienda_frontend
     restart: unless-stopped
     environment:

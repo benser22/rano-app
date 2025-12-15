@@ -7,6 +7,9 @@ import { ArrowRight, Flame, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+// Force dynamic rendering so products are always fresh
+export const dynamic = 'force-dynamic';
+
 async function getFeaturedProducts() {
   try {
     const data = await fetchAPI('/products', {
