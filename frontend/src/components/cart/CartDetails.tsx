@@ -10,9 +10,11 @@ import { PriceDisplay } from '@/components/products/PriceDisplay';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { useStoreConfig } from '@/lib/useStoreConfig';
 
 const CartDetails = () => {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
+  const { config } = useStoreConfig();
 
   const handleRemove = (id: string, name: string) => {
     removeItem(id);
@@ -38,7 +40,7 @@ const CartDetails = () => {
   }
 
   const subtotal = getTotal();
-  const shipping = subtotal > 50000 ? 0 : 2500;
+  const shipping = subtotal >= config.freeShippingMin ? 0 : config.shippingCost;
   const total = subtotal + shipping;
 
   return (
@@ -171,7 +173,7 @@ const CartDetails = () => {
             </div>
             {shipping > 0 && (
               <p className="text-xs text-muted-foreground">
-                ¡Agregá ${(50000 - subtotal).toLocaleString('es-AR')} más para envío gratis!
+                ¡Agregá ${(config.freeShippingMin - subtotal).toLocaleString('es-AR')} más para envío gratis!
               </p>
             )}
           </div>

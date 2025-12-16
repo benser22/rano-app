@@ -202,13 +202,13 @@ export default async function Home() {
             </h2>
             <div className="flex items-center justify-center gap-2 text-muted-foreground">
               <MapPin className="h-5 w-5 text-primary" />
-              <p className="text-lg">Av. Belgrano 3659, San Miguel de Tucumán</p>
+              <p className="text-lg">{storeConfig.address}</p>
             </div>
           </div>
 
           <div className="rounded-2xl overflow-hidden shadow-xl border border-border mx-4">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.1234567890123!2d-65.2092!3d-26.8241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94225c0e2e3d8f0f%3A0x1234567890abcdef!2sAv.%20Belgrano%203659%2C%20San%20Miguel%20de%20Tucum%C3%A1n%2C%20Tucum%C3%A1n!5e0!3m2!1ses!2sar!4v1234567890123!5m2!1ses!2sar"
+              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(storeConfig.address)}`}
               width="100%"
               height="400"
               style={{ border: 0 }}
@@ -222,7 +222,7 @@ export default async function Home() {
 
           <div className="mt-6 text-center">
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Av.+Belgrano+3659,+San+Miguel+de+Tucuman"
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeConfig.address)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-primary hover:underline font-medium"

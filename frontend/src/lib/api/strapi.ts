@@ -48,7 +48,15 @@ export interface StoreConfigData {
   storeName: string;
   navbarCategories: NavbarCategory[];
   freeShippingMin: number;
+  shippingCost: number;
   address: string;
+  whatsappNumber: string;
+  phone: string;
+  contactEmail: string;
+  hoursWeekdays: string;
+  hoursSaturday: string;
+  instagramUrl: string;
+  facebookUrl: string;
 }
 
 /**
@@ -68,8 +76,20 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
             ? data.data.navbarCategories
             : DEFAULT_NAVBAR_CATEGORIES,
         freeShippingMin: data.data.freeShippingMin ?? 30000,
+        shippingCost: data.data.shippingCost ?? 1500,
         address:
           data.data.address || "Av. Belgrano 3659, San Miguel de Tucumán",
+        whatsappNumber: data.data.whatsappNumber || "3815010399",
+        phone: "+54 381 501-0399",
+        contactEmail: data.data.contactEmail || "info@ranourban.com",
+        hoursWeekdays:
+          data.data.hoursWeekdays || "Lunes a Viernes: 9:00 - 20:00",
+        hoursSaturday: data.data.hoursSaturday || "Sábados: 10:00 - 14:00",
+        instagramUrl:
+          data.data.instagramUrl || "https://www.instagram.com/ranosurb/",
+        facebookUrl:
+          data.data.facebookUrl ||
+          "https://www.facebook.com/p/Rano-Urban-61578961229095/",
       };
     }
   } catch (error) {
@@ -80,6 +100,14 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
     storeName: "Rano Urban",
     navbarCategories: DEFAULT_NAVBAR_CATEGORIES,
     freeShippingMin: 30000,
+    shippingCost: 1500,
     address: "Av. Belgrano 3659, San Miguel de Tucumán",
+    whatsappNumber: "3815010399",
+    phone: "+54 381 501-0399",
+    contactEmail: "info@ranourban.com",
+    hoursWeekdays: "Lunes a Viernes: 9:00 - 20:00",
+    hoursSaturday: "Sábados: 10:00 - 14:00",
+    instagramUrl: "https://www.instagram.com/ranosurb/",
+    facebookUrl: "https://www.facebook.com/p/Rano-Urban-61578961229095/",
   };
 }

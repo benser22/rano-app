@@ -1,4 +1,4 @@
-import { fetchAPI, getMediaUrl } from '@/lib/api/strapi';
+import { fetchAPI, getMediaUrl, getStoreConfig } from '@/lib/api/strapi';
 import { Product } from '@/types';
 import AddToCart from '@/components/products/AddToCart';
 import { PriceDisplay } from '@/components/products/PriceDisplay';
@@ -93,9 +93,10 @@ export default async function ProductPage({ params }: Props) {
     notFound();
   }
 
-  const relatedProducts = product.category
-    ? await getRelatedProducts(product.category.slug, product.id)
-    : [];
+  const [relatedProducts, storeConfig] = await Promise.all([
+    product.category ? getRelatedProducts(product.category.slug, product.id) : Promise.resolve([]),
+    getStoreConfig()
+  ]);
 
   const mainImage = product.images && product.images.length > 0
     ? getMediaUrl(product.images[0].url)
@@ -208,7 +209,7 @@ export default async function ProductPage({ params }: Props) {
                 <Truck className="h-5 w-5 text-primary shrink-0" />
                 <div className="text-sm">
                   <p className="font-medium">Envío gratis</p>
-                  <p className="text-muted-foreground">+$50.000</p>
+                  <p className="text-muted-foreground">+${storeConfig.freeShippingMin.toLocaleString('es-AR')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
