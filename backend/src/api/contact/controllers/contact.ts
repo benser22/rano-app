@@ -1,5 +1,38 @@
 import type { Core } from "@strapi/strapi";
 
+// Helper function to send email via Resend API (avoids SMTP port blocking)
+async function sendEmailViaResend(
+  to: string,
+  subject: string,
+  html: string,
+): Promise<void> {
+  const apiKey = process.env.SMTP_PASS;
+  const from = process.env.SMTP_FROM || "noreply@22studios.xyz";
+
+  if (!apiKey) {
+    throw new Error("SMTP_PASS (Resend API Key) not configured");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to,
+      subject,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(`Resend API error: ${JSON.stringify(error)}`);
+  }
+}
+
 export default ({ strapi }: { strapi: Core.Strapi }) => ({
   async send(ctx) {
     try {
@@ -17,7 +50,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       }
 
       // Get store config for recipient email
-      let recipientEmail = process.env.SMTP_TO || "contacto@ranourban.com";
+      let recipientEmail = process.env.SMTP_TO || "info@ranourban.com";
       try {
         const storeConfig = await strapi
           .documents("api::store-config.store-config")
@@ -33,10 +66,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       const logoUrl = "https://rano.22studios.xyz/webp/rano_logo.webp";
 
       // Send email to store
-      await strapi.plugins["email"].services.email.send({
-        to: recipientEmail,
-        subject: `[Rano Urban] Nuevo mensaje: ${subject}`,
-        html: `
+      const storeEmailHtml = `
           <!DOCTYPE html>
           <html>
           <head>
@@ -101,14 +131,16 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
             </table>
           </body>
           </html>
-        `,
-      });
+        `;
+
+      await sendEmailViaResend(
+        recipientEmail,
+        `[Rano Urban] Nuevo mensaje: ${subject}`,
+        storeEmailHtml,
+      );
 
       // Send confirmation email to customer
-      await strapi.plugins["email"].services.email.send({
-        to: email,
-        subject: "¡Recibimos tu mensaje! - Rano Urban",
-        html: `
+      const customerEmailHtml = `
           <!DOCTYPE html>
           <html>
           <head>
@@ -162,8 +194,13 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
             </table>
           </body>
           </html>
-        `,
-      });
+        `;
+
+      await sendEmailViaResend(
+        email,
+        "¡Recibimos tu mensaje! - Rano Urban",
+        customerEmailHtml,
+      );
 
       return ctx.send({
         success: true,
