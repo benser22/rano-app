@@ -557,6 +557,79 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiStoreConfigStoreConfig extends Struct.SingleTypeSchema {
+  collectionName: 'store_configs';
+  info: {
+    description: 'Configuraci\u00F3n general de la tienda (contacto, env\u00EDos, horarios)';
+    displayName: 'Configuraci\u00F3n de la Tienda';
+    pluralName: 'store-configs';
+    singularName: 'store-config';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    address: Schema.Attribute.Text;
+    contactEmail: Schema.Attribute.Email &
+      Schema.Attribute.DefaultTo<'info@ranourban.com'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    facebookUrl: Schema.Attribute.String;
+    freeShippingMin: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<30000>;
+    hoursSaturday: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'S\u00E1bados: 10:00 - 14:00'>;
+    hoursWeekdays: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Lunes a Viernes: 9:00 - 20:00'>;
+    instagramUrl: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::store-config.store-config'
+    > &
+      Schema.Attribute.Private;
+    navbarCategories: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<
+        [
+          {
+            name: 'Remeras';
+            slug: 'remeras';
+          },
+          {
+            name: 'Jeans';
+            slug: 'jeans';
+          },
+          {
+            name: 'Buzos';
+            slug: 'buzos';
+          },
+          {
+            name: 'Vestidos';
+            slug: 'vestidos';
+          },
+          {
+            name: 'Polleras';
+            slug: 'polleras';
+          },
+          {
+            name: 'Camisas';
+            slug: 'camisas';
+          },
+        ]
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    shippingCost: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1500>;
+    storeName: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Rano Urban'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    whatsappNumber: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'3815010399'>;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -1070,6 +1143,7 @@ declare module '@strapi/strapi' {
       'api::category.category': ApiCategoryCategory;
       'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
+      'api::store-config.store-config': ApiStoreConfigStoreConfig;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

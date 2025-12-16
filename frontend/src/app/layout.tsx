@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import WhatsAppButton from '@/components/layout/WhatsAppButton';
+import ScrollToTopButton from '@/components/layout/ScrollToTopButton';
 import ClientProviders from '@/components/providers/ClientProviders';
 import { Toaster } from 'sonner';
 
@@ -66,6 +67,7 @@ export default function RootLayout({
             </main>
             <Footer />
           </div>
+          <ScrollToTopButton />
           <WhatsAppButton />
           <Toaster
             position="bottom-right"

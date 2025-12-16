@@ -48,6 +48,17 @@
     },
     "address": {
       "type": "text"
+    },
+    "navbarCategories": {
+      "type": "json",
+      "default": [
+        { "name": "Remeras", "slug": "remeras" },
+        { "name": "Jeans", "slug": "jeans" },
+        { "name": "Buzos", "slug": "buzos" },
+        { "name": "Vestidos", "slug": "vestidos" },
+        { "name": "Polleras", "slug": "polleras" },
+        { "name": "Camisas", "slug": "camisas" }
+      ]
     }
   }
 }

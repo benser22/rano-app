@@ -1,7 +1,6 @@
 import { FeaturedCarousel } from '@/components/products/FeaturedCarousel';
 import { Button } from '@/components/ui/button';
-import { STORE_CATEGORIES } from '@/constants/store';
-import { fetchAPI } from '@/lib/api/strapi';
+import { fetchAPI, getStoreConfig } from '@/lib/api/strapi';
 import { Product } from '@/types';
 import { ArrowRight, Flame, MapPin } from 'lucide-react';
 import Image from 'next/image';
@@ -38,9 +37,10 @@ async function getCategories() {
 }
 
 export default async function Home() {
-  const [featuredProducts, categories] = await Promise.all([
+  const [featuredProducts, categories, storeConfig] = await Promise.all([
     getFeaturedProducts(),
-    getCategories()
+    getCategories(),
+    getStoreConfig()
   ]);
 
   return (
@@ -130,16 +130,16 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 px-4">
-          {STORE_CATEGORIES.map((cat) => {
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-4 max-w-4xl mx-auto">
+          {storeConfig.navbarCategories.map((cat) => {
             return (
               <Link
                 key={cat.slug}
                 href={`/productos?category=${cat.slug}`}
-                className="group relative overflow-hidden rounded-2xl py-8 flex flex-col items-center justify-center p-4 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                className="group relative overflow-hidden rounded-xl h-16 sm:h-20 flex flex-col items-center justify-center px-6 transition-all duration-300 hover:scale-105 hover:shadow-xl w-full-xxs w-[calc(50%-0.375rem)] sm:w-32 md:w-36 lg:w-40"
               >
                 {/* Gradient Background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} group-hover:opacity-100 transition-opacity`} />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/90 group-hover:opacity-100 transition-opacity" />
 
                 {/* Decorative circles */}
                 <div className="absolute -top-6 -right-6 w-24 h-24 bg-white/10 rounded-full" />

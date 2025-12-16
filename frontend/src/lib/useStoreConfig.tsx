@@ -21,7 +21,20 @@ const DEFAULT_CONFIG = {
   facebookUrl: "https://www.facebook.com/p/Rano-Urban-61578961229095/",
   address: "Av. Belgrano 3659, San Miguel de Tucumán",
   phone: "+54 381 501-0399",
+  navbarCategories: [
+    { name: "Remeras", slug: "remeras" },
+    { name: "Jeans", slug: "jeans" },
+    { name: "Buzos", slug: "buzos" },
+    { name: "Vestidos", slug: "vestidos" },
+    { name: "Polleras", slug: "polleras" },
+    { name: "Camisas", slug: "camisas" },
+  ] as NavbarCategory[],
 };
+
+export interface NavbarCategory {
+  name: string;
+  slug: string;
+}
 
 export interface StoreConfig {
   storeName: string;
@@ -35,6 +48,7 @@ export interface StoreConfig {
   facebookUrl: string;
   address: string;
   phone: string;
+  navbarCategories: NavbarCategory[];
 }
 
 interface StoreConfigContextType {
@@ -84,6 +98,10 @@ export function StoreConfigProvider({ children }: { children: ReactNode }) {
             facebookUrl: data.data.facebookUrl || DEFAULT_CONFIG.facebookUrl,
             address: data.data.address || DEFAULT_CONFIG.address,
             phone: DEFAULT_CONFIG.phone, // Phone is derived from whatsapp
+            navbarCategories:
+              Array.isArray(data.data.navbarCategories) && data.data.navbarCategories.length > 0
+                ? data.data.navbarCategories
+                : DEFAULT_CONFIG.navbarCategories,
           });
         }
       } catch (err) {
