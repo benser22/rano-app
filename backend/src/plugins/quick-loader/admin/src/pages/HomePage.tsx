@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useFetchClient } from "@strapi/admin/strapi-admin";
 import { PLUGIN_ID } from "../pluginId";
 import { useState, useEffect } from "react";
+import { ActionCard, SectionCard, StatCard, CustomGrid } from "../ui";
+import styled from "styled-components";
 
 interface Stats {
   products: number;
@@ -17,6 +19,7 @@ interface Stats {
   totalSales: number;
   monthlySales: number;
 }
+
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -104,130 +107,68 @@ export const HomePage = () => {
       </Flex>
 
       {/* Quick Actions */}
-      <Grid.Root gap={4} marginBottom={6}>
-        <Grid.Item col={4}>
-          <Box
-            padding={5}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Flex direction="column" alignItems="center" gap={3}>
-              <Box
-                padding={3}
-                background="primary100"
-                style={{
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ShoppingCart width={32} height={32} color="primary600" />
-              </Box>
-              <Typography variant="delta" fontWeight="semiBold">
-                Productos
-              </Typography>
-              <Typography variant="pi" textColor="neutral600" textAlign="center">
-                Carga y gestiona productos de forma rápida
-              </Typography>
-              <Flex gap={2}>
+      <SectionCard title="🚀 Acciones Rápidas">
+        <CustomGrid $cols={3}>
+          <Box height="100%">
+            <ActionCard
+              title="Productos"
+              description="Carga y gestiona productos de forma rápida"
+              icon={<ShoppingCart width={32} height={32} color="primary600" />}
+              iconBg="primary100"
+            >
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", width: "100%" }}>
                 <Button
+                  variant="default"
                   startIcon={<Plus />}
-                  size="S"
                   onClick={() => navigate(`/plugins/${PLUGIN_ID}/products/new`)}
+                  style={{ flex: "1 1 auto", minWidth: "100px" }}
                 >
                   Nuevo
                 </Button>
                 <Button
                   variant="secondary"
-                  size="S"
                   onClick={() => navigate(`/plugins/${PLUGIN_ID}/products`)}
+                  style={{ flex: "1 1 auto", minWidth: "100px" }}
                 >
                   Ver todos
                 </Button>
-              </Flex>
-            </Flex>
+              </div>
+            </ActionCard>
           </Box>
-        </Grid.Item>
 
-        <Grid.Item col={4}>
-          <Box
-            padding={5}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Flex direction="column" alignItems="center" gap={3}>
-              <Box
-                padding={3}
-                background="success100"
-                style={{
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Folder width={32} height={32} color="success600" />
-              </Box>
-              <Typography variant="delta" fontWeight="semiBold">
-                Categorías
-              </Typography>
-              <Typography variant="pi" textColor="neutral600" textAlign="center">
-                Organiza tus productos en categorías
-              </Typography>
+          <Box height="100%">
+            <ActionCard
+              title="Categorías"
+              description="Organiza tus productos en categorías"
+              icon={<Folder width={32} height={32} color="success600" />}
+              iconBg="success100"
+            >
               <Button
                 variant="secondary"
-                size="S"
                 onClick={() => navigate(`/plugins/${PLUGIN_ID}/categories`)}
               >
                 Gestionar
               </Button>
-            </Flex>
+            </ActionCard>
           </Box>
-        </Grid.Item>
 
-        <Grid.Item col={4}>
-          <Box
-            padding={5}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Flex direction="column" alignItems="center" gap={3}>
-              <Box
-                padding={3}
-                background="warning100"
-                style={{
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Cog width={32} height={32} color="warning600" />
-              </Box>
-              <Typography variant="delta" fontWeight="semiBold">
-                Configuración
-              </Typography>
-              <Typography variant="pi" textColor="neutral600" textAlign="center">
-                Datos de contacto, envíos y redes
-              </Typography>
+          <Box height="100%">
+            <ActionCard
+              title="Configuración"
+              description="Datos de contacto, envíos y redes"
+              icon={<Cog width={32} height={32} color="warning600" />}
+              iconBg="warning100"
+            >
               <Button
                 variant="secondary"
-                size="S"
                 onClick={() => navigate(`/plugins/${PLUGIN_ID}/config`)}
               >
                 Editar
               </Button>
-            </Flex>
+            </ActionCard>
           </Box>
-        </Grid.Item>
-      </Grid.Root>
+        </CustomGrid>
+      </SectionCard>
 
       {loading ? (
         <Flex justifyContent="center" padding={8}>
@@ -236,133 +177,75 @@ export const HomePage = () => {
       ) : (
         <>
           {/* Resumen de Ventas */}
-          <Box
-            padding={5}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-            marginBottom={4}
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              💰 Resumen de Ventas
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={3}>
-                <Box padding={4} background="success100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Ventas Totales
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="success700">
-                      {formatCurrency(stats?.totalSales ?? 0)}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="primary100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Ventas del Mes
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="primary700">
-                      {formatCurrency(stats?.monthlySales ?? 0)}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="secondary100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Órdenes Pagadas
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="secondary700">
-                      {stats?.paidOrders ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="alternative100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Órdenes del Mes
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="alternative700">
-                      {stats?.monthlyOrders ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+          <SectionCard title="💰 Resumen de Ventas">
+            <CustomGrid $cols={4}>
+              <Box height="100%">
+                <StatCard
+                  title="Ventas Totales"
+                  value={formatCurrency(stats?.totalSales ?? 0)}
+                  variant="success"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Ventas del Mes"
+                  value={formatCurrency(stats?.monthlySales ?? 0)}
+                  variant="primary"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Órdenes Pagadas"
+                  value={stats?.paidOrders ?? 0}
+                  variant="secondary"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Órdenes del Mes"
+                  value={stats?.monthlyOrders ?? 0}
+                  variant="alternative"
+                />
+              </Box>
+            </CustomGrid>
+          </SectionCard>
 
           {/* Resumen de Productos */}
-          <Box
-            padding={5}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              📊 Resumen de Productos
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={3}>
-                <Box padding={4} background="primary100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Total Productos
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="primary600">
-                      {stats?.products ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="success100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Categorías
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="success600">
-                      {stats?.categories ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="warning100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Stock Bajo
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="warning600">
-                      {stats?.lowStock ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-              <Grid.Item col={3}>
-                <Box padding={4} background="danger100" borderRadius="8px" hasRadius>
-                  <Flex direction="column" gap={1}>
-                    <Typography variant="pi" textColor="neutral600">
-                      Sin Stock
-                    </Typography>
-                    <Typography variant="beta" fontWeight="bold" textColor="danger600">
-                      {stats?.noStock ?? 0}
-                    </Typography>
-                  </Flex>
-                </Box>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+          <SectionCard title="📊 Resumen de Productos">
+            <CustomGrid $cols={4}>
+              <Box height="100%">
+                <StatCard
+                  title="Total Productos"
+                  value={stats?.products ?? 0}
+                  variant="primary"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Categorías"
+                  value={stats?.categories ?? 0}
+                  variant="success"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Stock Bajo"
+                  value={stats?.lowStock ?? 0}
+                  variant="warning"
+                />
+              </Box>
+              <Box height="100%">
+                <StatCard
+                  title="Sin Stock"
+                  value={stats?.noStock ?? 0}
+                  variant="danger"
+                />
+              </Box>
+            </CustomGrid>
+          </SectionCard>
         </>
       )}
     </Box>
   );
 };
+

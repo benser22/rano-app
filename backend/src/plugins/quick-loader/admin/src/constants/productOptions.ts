@@ -75,3 +75,17 @@ export const generateSKU = (name: string, category?: string): string => {
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();
   return `${prefix}-${namePart}-${random}`;
 };
+
+// Etiquetas predefinidas para productos
+export const PREDEFINED_TAGS = [
+  "Nuevo",
+  "Oferta",
+  "Destacado",
+  "Liquidación",
+  "Edición Limitada",
+  "Verano",
+  "Invierno",
+  "Tendencia",
+  "Exclusivo",
+  "Black Friday",
+];
