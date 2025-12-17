@@ -43,8 +43,7 @@
       "type": "string"
     },
     "externalReference": {
-      "type": "string",
-      "unique": true
+      "type": "string"
     },
     "shippingAddress": {
       "type": "json"
