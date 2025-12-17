@@ -12,10 +12,6 @@ const payment = new Payment(client);
 
 export default {
   async handleMercadoPago(ctx) {
-    console.log(
-      "🔔 [Webhook] Recibida notificación de MercadoPago:",
-      JSON.stringify(ctx.request.body),
-    );
     try {
       const { type, data } = ctx.request.body;
 
@@ -58,10 +54,6 @@ export default {
       };
 
       const newStatus = statusMap[paymentData.status] || "pending";
-
-      console.log(
-        `✅ [Webhook] Actualizando orden ${order.id} a status: ${newStatus} (PaymentID: ${paymentData.id})`,
-      );
 
       await strapi.entityService.update("api::order.order", order.id, {
         data: {

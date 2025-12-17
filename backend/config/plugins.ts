@@ -1,4 +1,22 @@
 export default ({ env }) => ({
+  // Plugin Quick Loader - Carga rápida de productos
+  "quick-loader": {
+    enabled: true,
+    resolve: "./src/plugins/quick-loader",
+  },
+  // Configuración del Upload
+  upload: {
+    config: {
+      sizeLimit: 3 * 1024 * 1024, // 3MB en bytes
+      breakpoints: {
+        xlarge: 1920,
+        large: 1000,
+        medium: 750,
+        small: 500,
+        xsmall: 64,
+      },
+    },
+  },
   email: {
     config: {
       provider: "nodemailer",

@@ -1,3 +1,5 @@
+import { cleanOrphanedImages } from "../config/cron-tasks";
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -14,6 +16,14 @@ export default {
     // Enable Google OAuth Provider
     // =========================================
     await enableGoogleProvider(strapi);
+
+    // =========================================
+    // Clean orphaned images on startup
+    // =========================================
+    // Delay execution to ensure all services are ready
+    setTimeout(async () => {
+      await cleanOrphanedImages(strapi);
+    }, 10000); // Wait 10 seconds after startup
 
     // =========================================
     // Set up permissions

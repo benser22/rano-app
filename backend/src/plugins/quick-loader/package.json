@@ -1,0 +1,28 @@
+{
+  "name": "quick-loader",
+  "version": "1.0.0",
+  "description": "Panel de carga rápida de productos, categorías y configuración de tienda",
+  "strapi": {
+    "name": "quick-loader",
+    "description": "Carga rápida de productos y gestión de tienda",
+    "kind": "plugin"
+  },
+  "exports": {
+    "./strapi-admin": {
+      "source": "./admin/src/index.tsx",
+      "import": "./admin/src/index.tsx",
+      "require": "./admin/src/index.tsx",
+      "default": "./admin/src/index.tsx"
+    },
+    "./strapi-server": {
+      "source": "./server/index.ts",
+      "require": "./server/index.ts",
+      "import": "./server/index.ts",
+      "default": "./server/index.ts"
+    }
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@strapi/strapi": "^5.0.0"
+  }
+}
