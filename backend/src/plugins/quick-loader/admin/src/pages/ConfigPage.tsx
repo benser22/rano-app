@@ -6,7 +6,6 @@ import {
   TextInput,
   Textarea,
   NumberInput,
-  Grid,
   Loader,
   Field,
 } from "@strapi/design-system";
@@ -17,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useFetchClient } from "@strapi/admin/strapi-admin";
 import { PLUGIN_ID } from "../pluginId";
 import { useState, useEffect } from "react";
+import { SectionCard, RowContainer } from "../ui";
 
 interface StoreConfig {
   storeName: string;
@@ -56,21 +56,23 @@ export const ConfigPage = () => {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const { data } = await get(
+        const response = await get(
           "/content-manager/single-types/api::store-config.store-config"
         );
-        if (data) {
+        // La respuesta tiene estructura: { data: { ...campos... }, meta: {...} }
+        const configData = response.data?.data || response.data;
+        if (configData) {
           setConfig({
-            storeName: data.storeName || defaultConfig.storeName,
-            whatsappNumber: data.whatsappNumber || "",
-            contactEmail: data.contactEmail || "",
-            freeShippingMin: data.freeShippingMin ?? defaultConfig.freeShippingMin,
-            shippingCost: data.shippingCost ?? defaultConfig.shippingCost,
-            hoursWeekdays: data.hoursWeekdays || "",
-            hoursSaturday: data.hoursSaturday || "",
-            instagramUrl: data.instagramUrl || "",
-            facebookUrl: data.facebookUrl || "",
-            address: data.address || "",
+            storeName: configData.storeName || defaultConfig.storeName,
+            whatsappNumber: configData.whatsappNumber || "",
+            contactEmail: configData.contactEmail || "",
+            freeShippingMin: configData.freeShippingMin ?? defaultConfig.freeShippingMin,
+            shippingCost: configData.shippingCost ?? defaultConfig.shippingCost,
+            hoursWeekdays: configData.hoursWeekdays || "",
+            hoursSaturday: configData.hoursSaturday || "",
+            instagramUrl: configData.instagramUrl || "",
+            facebookUrl: configData.facebookUrl || "",
+            address: configData.address || "",
           });
         }
       } catch (error) {
@@ -81,7 +83,8 @@ export const ConfigPage = () => {
     };
 
     loadConfig();
-  }, [get]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (field: keyof StoreConfig, value: string | number) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
@@ -103,7 +106,13 @@ export const ConfigPage = () => {
   return (
     <Box padding={8} background="neutral100">
       {/* Header */}
-      <Flex justifyContent="space-between" alignItems="center" marginBottom={6}>
+      <Flex
+        justifyContent="space-between"
+        alignItems="flex-start"
+        marginBottom={6}
+        wrap="wrap"
+        gap={4}
+      >
         <Flex direction="column" alignItems="flex-start" gap={1}>
           <Button
             variant="tertiary"
@@ -112,7 +121,7 @@ export const ConfigPage = () => {
           >
             Volver
           </Button>
-          <Typography variant="alpha" fontWeight="bold">
+          <Typography variant="alpha" fontWeight="bold" style={{ marginBlock: 4 }}>
             ⚙️ Configuración de la Tienda
           </Typography>
           <Typography variant="epsilon" textColor="neutral600">
@@ -124,6 +133,7 @@ export const ConfigPage = () => {
           disabled={!hasChanges || saving}
           loading={saving}
           startIcon={<Check />}
+          size="L"
         >
           Guardar Cambios
         </Button>
@@ -134,82 +144,62 @@ export const ConfigPage = () => {
           <Loader>Cargando configuración...</Loader>
         </Flex>
       ) : (
-        <Flex direction="column" gap={6}>
-          {/* Datos Generales */}
-          <Box
-            padding={6}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              🏪 Datos Generales
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Nombre de la Tienda</Field.Label>
-                  <TextInput
-                    value={config.storeName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("storeName", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Email de Contacto</Field.Label>
-                  <TextInput
-                    type="email"
-                    value={config.contactEmail}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("contactEmail", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Número de WhatsApp</Field.Label>
-                  <TextInput
-                    placeholder="Ej: 3815010399"
-                    value={config.whatsappNumber}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("whatsappNumber", e.target.value)
-                    }
-                  />
-                  <Typography variant="pi" textColor="neutral600">Sin código de país, solo el número</Typography>
-                </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Dirección</Field.Label>
-                  <Textarea
-                    value={config.address}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                      handleChange("address", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+        <Flex direction="column" gap={4}>
+          {/* FILA 1: Datos Generales + Envíos */}
+          <RowContainer>
+            <SectionCard title="🏪 Datos Generales">
+              <Flex wrap="wrap" gap={4}>
+                <Box style={{ flex: '1 1 200px', minWidth: '180px' }}>
+                  <Field.Root>
+                    <Field.Label>Nombre de la Tienda</Field.Label>
+                    <TextInput
+                      value={config.storeName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("storeName", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 200px', minWidth: '180px' }}>
+                  <Field.Root>
+                    <Field.Label>Email de Contacto</Field.Label>
+                    <TextInput
+                      type="email"
+                      value={config.contactEmail}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("contactEmail", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 200px', minWidth: '180px' }}>
+                  <Field.Root>
+                    <Field.Label>WhatsApp</Field.Label>
+                    <TextInput
+                      placeholder="Ej: 3815010399"
+                      value={config.whatsappNumber}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("whatsappNumber", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 200px', minWidth: '180px' }}>
+                  <Field.Root>
+                    <Field.Label>Dirección</Field.Label>
+                    <TextInput
+                      value={config.address}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("address", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+              </Flex>
+            </SectionCard>
 
-          {/* Envíos */}
-          <Box
-            padding={6}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              🚚 Configuración de Envíos
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={6}>
+            <SectionCard title="🚚 Configuración de Envíos">
+              <Flex direction="column" gap={4}>
                 <Field.Root>
                   <Field.Label>Costo de Envío</Field.Label>
                   <NumberInput
@@ -220,10 +210,8 @@ export const ConfigPage = () => {
                     step={100}
                   />
                 </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
                 <Field.Root>
-                  <Field.Label>Mínimo para Envío Gratis</Field.Label>
+                  <Field.Label>Mínimo Envío Gratis</Field.Label>
                   <NumberInput
                     value={config.freeShippingMin}
                     onValueChange={(value: number | undefined) =>
@@ -231,89 +219,74 @@ export const ConfigPage = () => {
                     }
                     step={1000}
                   />
-                  <Typography variant="pi" textColor="neutral600">Compras mayores a este monto tienen envío gratis</Typography>
+                  <Typography variant="pi" textColor="neutral600">
+                    Compras mayores tienen envío gratis
+                  </Typography>
                 </Field.Root>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+              </Flex>
+            </SectionCard>
+          </RowContainer>
 
-          {/* Horarios */}
-          <Box
-            padding={6}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              🕐 Horarios de Atención
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Lunes a Viernes</Field.Label>
-                  <TextInput
-                    placeholder="Ej: 9:00 - 20:00"
-                    value={config.hoursWeekdays}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("hoursWeekdays", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Sábados</Field.Label>
-                  <TextInput
-                    placeholder="Ej: 10:00 - 14:00"
-                    value={config.hoursSaturday}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("hoursSaturday", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+          {/* FILA 2: Horarios + Redes Sociales */}
+          <RowContainer>
+            <SectionCard title="🕐 Horarios de Atención">
+              <Flex wrap="wrap" gap={4}>
+                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <Field.Root>
+                    <Field.Label>Lunes a Viernes</Field.Label>
+                    <TextInput
+                      placeholder="Ej: 9:00 - 20:00"
+                      value={config.hoursWeekdays}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("hoursWeekdays", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <Field.Root>
+                    <Field.Label>Sábados</Field.Label>
+                    <TextInput
+                      placeholder="Ej: 10:00 - 14:00"
+                      value={config.hoursSaturday}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("hoursSaturday", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+              </Flex>
+            </SectionCard>
 
-          {/* Redes Sociales */}
-          <Box
-            padding={6}
-            background="neutral0"
-            shadow="filterShadow"
-            borderRadius="8px"
-            hasRadius
-          >
-            <Typography variant="delta" fontWeight="semiBold" marginBottom={4}>
-              📱 Redes Sociales
-            </Typography>
-            <Grid.Root gap={4}>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Instagram</Field.Label>
-                  <TextInput
-                    placeholder="https://instagram.com/..."
-                    value={config.instagramUrl}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("instagramUrl", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-              <Grid.Item col={6}>
-                <Field.Root>
-                  <Field.Label>Facebook</Field.Label>
-                  <TextInput
-                    placeholder="https://facebook.com/..."
-                    value={config.facebookUrl}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleChange("facebookUrl", e.target.value)
-                    }
-                  />
-                </Field.Root>
-              </Grid.Item>
-            </Grid.Root>
-          </Box>
+            <SectionCard title="📱 Redes Sociales">
+              <Flex wrap="wrap" gap={4}>
+                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <Field.Root>
+                    <Field.Label>Instagram</Field.Label>
+                    <TextInput
+                      placeholder="https://instagram.com/..."
+                      value={config.instagramUrl}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("instagramUrl", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                  <Field.Root>
+                    <Field.Label>Facebook</Field.Label>
+                    <TextInput
+                      placeholder="https://facebook.com/..."
+                      value={config.facebookUrl}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("facebookUrl", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+              </Flex>
+            </SectionCard>
+          </RowContainer>
         </Flex>
       )}
     </Box>

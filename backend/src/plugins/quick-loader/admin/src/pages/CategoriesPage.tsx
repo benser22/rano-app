@@ -132,7 +132,13 @@ export const CategoriesPage = () => {
   return (
     <Box padding={8} background="neutral100">
       {/* Header */}
-      <Flex justifyContent="space-between" alignItems="center" marginBottom={6}>
+      <Flex
+        justifyContent="space-between"
+        alignItems="flex-start"
+        marginBottom={6}
+        wrap="wrap"
+        gap={4}
+      >
         <Flex direction="column" alignItems="flex-start" gap={1}>
           <Button
             variant="tertiary"
@@ -141,14 +147,14 @@ export const CategoriesPage = () => {
           >
             Volver
           </Button>
-          <Typography variant="alpha" fontWeight="bold">
+          <Typography variant="alpha" fontWeight="bold" style={{ marginBlock: 4 }}>
             📁 Categorías
           </Typography>
           <Typography variant="epsilon" textColor="neutral600">
             Organiza tus productos en categorías
           </Typography>
         </Flex>
-        <Button onClick={handleOpenCreate} startIcon={<Plus />}>
+        <Button onClick={handleOpenCreate} startIcon={<Plus />} size="L">
           Nueva Categoría
         </Button>
       </Flex>
@@ -222,7 +228,7 @@ export const CategoriesPage = () => {
       {/* Modal para crear/editar */}
       {isModalOpen && (
         <Modal.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <Modal.Content>
+          <Modal.Content style={{ maxWidth: "600px" }}>
             <Modal.Header>
               <Modal.Title>
                 {editingCategory ? "Editar Categoría" : "Nueva Categoría"}

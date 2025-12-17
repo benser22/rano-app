@@ -22,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - Individual error handling per file
   - Success/error count feedback
   - Larger upload icon (64px)
+- **Responsive Admin Pages**
+  - ProductsPage header with flex wrap
+  - CategoriesPage header with flex wrap
+  - ConfigPage refactored with RowContainer and SectionCard
+  - All action buttons now use size="L" for better padding
 
 ### Changed
 
@@ -30,12 +35,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - CustomGrid uses transient props ($cols, $tabletCols, $mobileCols)
 - Increased image size limit from 3MB to 5MB
 - Form header is now responsive with wrap
+- ConfigPage now uses 2-row layout: (Datos+Envíos) and (Horarios+Redes)
+- RowContainer improved with better responsive breakpoints
 
 ### Fixed
 
 - React DOM warnings for styled-components props
 - Image upload state getting stuck after errors
 - Tags, sizes, and colors now show as removable Tag components
+- ConfigPage now correctly loads all config values from API
 
 ---
 

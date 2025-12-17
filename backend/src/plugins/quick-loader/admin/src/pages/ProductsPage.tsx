@@ -121,18 +121,22 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
   return (
     <Box padding={8} background="neutral100">
       {/* Header */}
-      <Flex justifyContent="space-between" alignItems="center" marginBottom={6}>
+      <Flex
+        justifyContent="space-between"
+        alignItems="flex-start"
+        marginBottom={6}
+        wrap="wrap"
+        gap={4}
+      >
         <Flex direction="column" alignItems="flex-start" gap={1}>
-          <Flex alignItems="center" gap={2}>
-            <Button
-              variant="tertiary"
-              startIcon={<ArrowLeft />}
-              onClick={() => navigate(`/plugins/${PLUGIN_ID}`)}
-            >
-              Volver
-            </Button>
-          </Flex>
-          <Typography variant="alpha" fontWeight="bold">
+          <Button
+            variant="tertiary"
+            startIcon={<ArrowLeft />}
+            onClick={() => navigate(`/plugins/${PLUGIN_ID}`)}
+          >
+            Volver
+          </Button>
+          <Typography variant="alpha" fontWeight="bold" style={{ marginBlock: 4 }}>
             📦 Productos
           </Typography>
           <Typography variant="epsilon" textColor="neutral600">
@@ -147,6 +151,7 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
         <Button
           startIcon={<Plus />}
           onClick={() => navigate(`/plugins/${PLUGIN_ID}/products/new`)}
+          size="L"
         >
           Nuevo Producto
         </Button>
@@ -161,15 +166,15 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
         hasRadius
         marginBottom={4}
       >
-        <Flex gap={4}>
-          <Box flex={1}>
+        <Flex gap={4} wrap="wrap">
+          <Box style={{ flex: '1 1 250px', minWidth: '200px' }}>
             <TextInput
               placeholder="Buscar por nombre o SKU..."
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
             />
           </Box>
-          <Box style={{ minWidth: "200px" }}>
+          <Box style={{ flex: '0 1 250px', minWidth: '200px' }}>
             <SingleSelect
               placeholder="Filtrar por categoría"
               value={categoryFilter}
