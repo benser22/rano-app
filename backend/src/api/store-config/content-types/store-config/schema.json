@@ -46,6 +46,10 @@
     "facebookUrl": {
       "type": "string"
     },
+    "tiktokUrl": {
+      "type": "string",
+      "default": "https://www.tiktok.com/@ranourban"
+    },
     "address": {
       "type": "text"
     },

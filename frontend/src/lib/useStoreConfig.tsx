@@ -19,6 +19,7 @@ const DEFAULT_CONFIG = {
   hoursSaturday: "Sábados: 10:00 - 14:00",
   instagramUrl: "https://www.instagram.com/ranosurb/",
   facebookUrl: "https://www.facebook.com/p/Rano-Urban-61578961229095/",
+  tiktokUrl: "https://www.tiktok.com/@ranourban",
   address: "Av. Belgrano 3659, San Miguel de Tucumán",
   phone: "+54 381 501-0399",
   navbarCategories: [
@@ -46,6 +47,7 @@ export interface StoreConfig {
   hoursSaturday: string;
   instagramUrl: string;
   facebookUrl: string;
+  tiktokUrl: string;
   address: string;
   phone: string;
   navbarCategories: NavbarCategory[];
@@ -96,6 +98,7 @@ export function StoreConfigProvider({ children }: { children: ReactNode }) {
               data.data.hoursSaturday || DEFAULT_CONFIG.hoursSaturday,
             instagramUrl: data.data.instagramUrl || DEFAULT_CONFIG.instagramUrl,
             facebookUrl: data.data.facebookUrl || DEFAULT_CONFIG.facebookUrl,
+            tiktokUrl: data.data.tiktokUrl || DEFAULT_CONFIG.tiktokUrl,
             address: data.data.address || DEFAULT_CONFIG.address,
             phone: DEFAULT_CONFIG.phone, // Phone is derived from whatsapp
             navbarCategories:

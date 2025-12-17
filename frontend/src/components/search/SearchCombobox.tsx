@@ -137,57 +137,65 @@ export function SearchCombobox({
 
       {/* Results dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-card rounded-lg shadow-lg border z-50 overflow-hidden">
+        <div className="absolute top-full left-0 w-full sm:w-[400px] mt-2 bg-popover text-popover-foreground rounded-xl shadow-xl border border-border/50 z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95">
           {isLoading ? (
-            <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Buscando...
+            <div className="p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <p className="text-sm font-medium">Buscando...</p>
             </div>
           ) : results.length === 0 ? (
-            <div className="p-4 text-center text-muted-foreground">
-              No se encontraron productos para "{query}"
+            <div className="p-6 text-center text-muted-foreground">
+              <p>No encontramos nada para <span className="font-semibold text-foreground">"{query}"</span></p>
             </div>
           ) : (
             <>
-              <ul className="divide-y">
-                {results.map((product) => {
-                  const imageUrl = product.images?.[0]?.url
-                    ? getMediaUrl(product.images[0].url)
-                    : '/avif/placeholder.avif';
+              <div className="max-h-[60vh] overflow-y-auto custom-scrollbar">
+                <ul className="py-2">
+                  <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Productos Sugeridos
+                  </div>
+                  {results.map((product) => {
+                    const imageUrl = product.images?.[0]?.url
+                      ? getMediaUrl(product.images[0].url)
+                      : '/avif/placeholder.avif';
 
-                  return (
-                    <li key={product.id}>
-                      <Link
-                        href={`/productos/${product.slug}`}
-                        onClick={handleResultClick}
-                        className="flex items-center gap-3 p-3 hover:bg-muted transition-colors"
-                      >
-                        <div className="w-12 h-12 bg-muted rounded overflow-hidden shrink-0">
-                          <ImgWithFallback
-                            src={imageUrl || ''}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{product.name}</p>
-                          <p className="text-sm text-primary font-semibold">
-                            ${product.price.toLocaleString('es-AR')}
-                          </p>
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-              <div className="p-2 border-t bg-muted/50">
+                    return (
+                      <li key={product.id}>
+                        <Link
+                          href={`/productos/${product.slug}`}
+                          onClick={handleResultClick}
+                          className="flex items-center gap-4 px-4 py-3 hover:bg-muted/60 transition-colors group"
+                        >
+                          <div className="w-12 h-12 bg-muted rounded-md overflow-hidden shrink-0 border border-border/50">
+                            <ImgWithFallback
+                              src={imageUrl || ''}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate text-sm group-hover:text-primary transition-colors">
+                              {product.name}
+                            </p>
+                            <p className="text-sm font-semibold text-muted-foreground mt-0.5">
+                              ${product.price.toLocaleString('es-AR')}
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="p-3 border-t bg-muted/30">
                 <Button
-                  variant="ghost"
+                  variant="default"
                   size="sm"
-                  className="w-full"
+                  className="w-full gap-2 font-medium"
                   onClick={handleSearchSubmit}
                 >
-                  Ver todos los resultados para "{query}"
+                  <Search className="h-3.5 w-3.5" />
+                  Ver todos los resultados
                 </Button>
               </div>
             </>

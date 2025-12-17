@@ -46,6 +46,29 @@ const Footer = () => {
               >
                 <Facebook className="h-5 w-5" />
               </a>
+              <a
+                href={config.tiktokUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                aria-label="TikTok"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  preserveAspectRatio="none"
+                  className="h-[22px] w-5"
+                >
+                  <path d="M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z" />
+                </svg>
+              </a>
             </div>
           </div>
 

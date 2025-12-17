@@ -1,6 +1,5 @@
 "use client";
 
-import { MessageCircle } from 'lucide-react';
 import { useStoreConfig } from '@/lib/useStoreConfig';
 
 export default function WhatsAppButton() {
@@ -12,7 +11,7 @@ export default function WhatsAppButton() {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 z-50 bg-[#009F08] hover:bg-[#007808] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+      className="fixed bottom-8 right-8 z-50 bg-[#41B255] hover:bg-[#52CD60] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
       aria-label="Contactar por WhatsApp"
     >
       {/* WhatsApp Icon SVG */}
@@ -25,7 +24,7 @@ export default function WhatsAppButton() {
       </svg>
 
       {/* Smaller, subtler pulse animation */}
-      <span className="absolute -inset-1 rounded-full bg-[#25D366]/40 animate-ping opacity-75 scale-90" style={{ animationDuration: '2s' }} />
+      <span className="absolute -inset-1 rounded-full bg-[#25D366]/40 animate-ping opacity-75 scale-90" style={{ animationDuration: '5s' }} />
     </a>
   );
 }

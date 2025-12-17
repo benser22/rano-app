@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, LogOut, Package, Settings, Heart } from 'lucide-react';
+import { User, LogOut, Package, Settings, Heart, LogIn, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -28,18 +28,27 @@ export function UserDropdown() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Menú de usuario">
-            <User className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-10 w-10 relative hover:bg-accent/80" aria-label="Menú de usuario">
+            <User className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
-            <Link href="/login" className="cursor-pointer">
+        <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl border border-border/50 shadow-xl">
+          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+            Mi Cuenta
+          </div>
+          <DropdownMenuItem asChild className="p-2.5 rounded-lg cursor-pointer focus:bg-accent/50">
+            <Link href="/login" className="flex items-center gap-3 font-medium">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <LogIn className="h-4 w-4" />
+              </div>
               Iniciar Sesión
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/register" className="cursor-pointer">
+          <DropdownMenuItem asChild className="p-2.5 rounded-lg cursor-pointer focus:bg-accent/50 mt-1">
+            <Link href="/register" className="flex items-center gap-3 font-medium">
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-foreground">
+                <UserPlus className="h-4 w-4" />
+              </div>
               Crear Cuenta
             </Link>
           </DropdownMenuItem>
@@ -51,14 +60,14 @@ export function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label="Menú de usuario">
+        <Button variant="ghost" size="icon" className="h-10 w-10 relative hover:bg-accent/80" aria-label="Menú de usuario">
           <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
             {user.username?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <div className="px-2 py-2">
+      <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl border border-border/50 shadow-xl">
+        <div className="px-2 py-2 mb-1">
           <p className="font-medium truncate">{user.username || 'Usuario'}</p>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
         </div>

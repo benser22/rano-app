@@ -44,12 +44,15 @@ export default {
     const orderItems = [];
 
     for (const item of items) {
+      // Use item.product (from frontend) or fallback to item.id
+      const productId = item.product || item.id;
+
       const product = await strapi.entityService.findOne(
         "api::product.product",
-        item.id,
+        productId,
       );
       if (!product) {
-        return ctx.badRequest(`Product ${item.id} not found`);
+        return ctx.badRequest(`Product ${productId} not found`);
       }
       if (product.stock < item.quantity) {
         return ctx.badRequest(`Insufficient stock for ${product.name}`);
@@ -62,11 +65,15 @@ export default {
         product: product.id,
         quantity: item.quantity,
         price: product.price, // snapshot price
+        size: item.size,
+        color: item.color,
       });
 
       const productAny = product as any;
+      const variantInfo = [item.size, item.color].filter(Boolean).join(" / ");
+
       infoItems.push({
-        title: product.name,
+        title: variantInfo ? `${product.name} (${variantInfo})` : product.name,
         unit_price: Number(product.price),
         quantity: item.quantity,
         currency_id: "ARS", // Assuming ARS or use configured currency

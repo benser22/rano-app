@@ -5,16 +5,19 @@ export default factories.createCoreController(
   ({ strapi }) => ({
     async getFilters(ctx) {
       try {
-        const products = await strapi.db
-          .query("api::product.product")
-          .findMany({
-            select: ["sizes", "colors"],
-          });
+        const products = await strapi.entityService.findMany(
+          "api::product.product",
+          {
+            fields: ["sizes", "colors"],
+            limit: -1, // Fetch all to get accurate filters
+          },
+        );
 
         const allSizes = new Set<string>();
         const allColors = new Set<string>();
 
-        products.forEach((product: any) => {
+        // @ts-ignore
+        products.forEach((product) => {
           if (Array.isArray(product.sizes)) {
             product.sizes.forEach((s: string) => allSizes.add(s));
           }

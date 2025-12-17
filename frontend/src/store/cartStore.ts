@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface CartItem {
   id: string; // items are product_id + variant string if needed, or just unique id
@@ -10,6 +10,9 @@ export interface CartItem {
   image?: string;
   images?: any[]; // Allow images array from Strapi
   slug: string;
+  selectedSize?: string;
+  selectedColor?: string;
+  stock?: number;
 }
 
 interface CartStore {
@@ -35,7 +38,7 @@ export const useCartStore = create<CartStore>()(
             items: currentItems.map((i) =>
               i.id === item.id
                 ? { ...i, quantity: i.quantity + item.quantity }
-                : i
+                : i,
             ),
           });
         } else {
@@ -47,20 +50,18 @@ export const useCartStore = create<CartStore>()(
       },
       updateQuantity: (id, quantity) => {
         if (quantity <= 0) {
-             set({ items: get().items.filter((i) => i.id !== id) });
-             return;
+          set({ items: get().items.filter((i) => i.id !== id) });
+          return;
         }
         set({
-          items: get().items.map((i) =>
-            i.id === id ? { ...i, quantity } : i
-          ),
+          items: get().items.map((i) => (i.id === id ? { ...i, quantity } : i)),
         });
       },
       clearCart: () => set({ items: [] }),
       getTotal: () => {
         return get().items.reduce(
           (total, item) => total + item.price * item.quantity,
-          0
+          0,
         );
       },
       getItemCount: () => {
@@ -68,8 +69,8 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'cart-storage',
+      name: "cart-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

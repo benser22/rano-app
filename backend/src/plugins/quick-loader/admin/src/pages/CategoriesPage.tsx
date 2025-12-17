@@ -76,7 +76,12 @@ export const CategoriesPage = () => {
           formData
         );
       } else {
-        await post("/content-manager/collection-types/api::category.category", formData);
+        const { data } = await post("/content-manager/collection-types/api::category.category", formData);
+        const documentId = data.data?.documentId || data.documentId;
+
+        if (documentId) {
+          await post(`/content-manager/collection-types/api::category.category/${documentId}/actions/publish`, {});
+        }
       }
       setIsModalOpen(false);
       loadCategories();

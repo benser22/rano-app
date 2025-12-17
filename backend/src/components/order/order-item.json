@@ -19,6 +19,12 @@
     "price": {
       "type": "decimal",
       "required": true
+    },
+    "size": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
     }
   }
 }

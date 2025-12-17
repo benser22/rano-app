@@ -64,6 +64,8 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
 
       const brandColor = "#dc2626";
       const logoUrl = "https://rano.22studios.xyz/webp/rano_logo.webp";
+      const frontendUrl =
+        process.env.FRONTEND_URL || "https://rano.22studios.xyz";
 
       // Send email to store
       const storeEmailHtml = `
@@ -78,8 +80,15 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
               <!-- Header -->
               <tr>
                 <td style="background: linear-gradient(135deg, ${brandColor} 0%, #b91c1c 100%); padding: 30px; text-align: center;">
-                  <img src="${logoUrl}" alt="Rano Urban" width="60" height="60" style="margin-bottom: 10px; border-radius: 8px;">
-                  <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 700;">Nuevo Mensaje de Contacto</h1>
+                  <a href="${frontendUrl}" style="text-decoration: none;">
+                    <img src="${logoUrl}" alt="Rano Urban" width="60" height="60" style="margin-bottom: 10px; border-radius: 8px; display: inline-block;">
+                  </a>
+                  <h1 style="margin: 0; font-size: 24px; font-weight: 700;">
+                    <a href="${frontendUrl}" style="color: white; text-decoration: none;">Nuevo Mensaje de Contacto</a>
+                  </h1>
+                  <p style="margin: 5px 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                    <a href="${frontendUrl}" style="color: #e2e8f0; text-decoration: underline;">Ir a la Web</a>
+                  </p>
                 </td>
               </tr>
               
@@ -152,9 +161,16 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
               <!-- Header -->
               <tr>
                 <td style="background: #000000; padding: 30px; text-align: center;">
-                  <img src="${logoUrl}" alt="Rano Urban" width="60" height="60" style="margin-bottom: 10px; border-radius: 8px;">
-                  <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Rano Urban</h1>
+                  <a href="${frontendUrl}" style="text-decoration: none;">
+                    <img src="${logoUrl}" alt="Rano Urban" width="60" height="60" style="margin-bottom: 10px; border-radius: 8px; display: inline-block;">
+                  </a>
+                  <h1 style="margin: 0; font-size: 28px; font-weight: 700;">
+                    <a href="${frontendUrl}" style="color: white; text-decoration: none;">Rano Urban</a>
+                  </h1>
                   <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0; font-size: 14px;">Precio y calidad</p>
+                  <p style="margin: 10px 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                    <a href="${frontendUrl}" style="color: #4ade80; text-decoration: underline;">Visitar Tienda</a>
+                  </p>
                 </td>
               </tr>
               

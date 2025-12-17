@@ -17,9 +17,11 @@ interface ProductGridProps {
   priceRange?: string;
   minPrice?: number;
   maxPrice?: number;
+  sizes?: string[];
+  colors?: string[];
 }
 
-type SortOption = 'recent' | 'price-asc' | 'price-desc' | 'name-asc';
+type SortOption = 'recent' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -30,6 +32,8 @@ export function ProductGrid({
   priceRange,
   minPrice,
   maxPrice,
+  sizes,
+  colors,
 }: ProductGridProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -51,20 +55,8 @@ export function ProductGrid({
     setHasMore(initialProducts.length >= PRODUCTS_PER_PAGE);
   }, [initialProducts]);
 
-  // Sort products client-side
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-asc':
-        return a.price - b.price;
-      case 'price-desc':
-        return b.price - a.price;
-      case 'name-asc':
-        return a.name.localeCompare(b.name);
-      case 'recent':
-      default:
-        return 0; // Keep original order (most recent from API)
-    }
-  });
+  // Products are already sorted from the server
+  const sortedProducts = products;
 
   const handleSortChange = (newSort: SortOption) => {
     setSortBy(newSort);
@@ -100,9 +92,44 @@ export function ProductGrid({
         if (maxPrice !== undefined) filters.price.$lte = maxPrice;
       }
 
+      if (sizes && sizes.length > 0) {
+        const sizeConditions = sizes.map(s => ({ sizes: { $containsi: s } }));
+        if (!filters.$and) filters.$and = [];
+        filters.$and.push({ $or: sizeConditions });
+      }
+
+      if (colors && colors.length > 0) {
+        const colorConditions = colors.map(c => ({ colors: { $containsi: c } }));
+        if (!filters.$and) filters.$and = [];
+        filters.$and.push({ $or: colorConditions });
+      }
+
+      // Determine sort order for loadMore
+      let sortParam: string | string[] = 'publishedAt:desc';
+
+      switch (sortBy) {
+        case 'price-asc':
+          sortParam = 'price:asc';
+          break;
+        case 'price-desc':
+          sortParam = 'price:desc';
+          break;
+        case 'name-asc':
+          sortParam = 'name:asc';
+          break;
+        case 'name-desc':
+          sortParam = 'name:desc';
+          break;
+        case 'recent':
+        default:
+          sortParam = 'publishedAt:desc';
+          break;
+      }
+
       const data = await fetchAPI('/products', {
         populate: ['images', 'category'],
         filters,
+        sort: sortParam,
         pagination: {
           start: page * PRODUCTS_PER_PAGE,
           limit: PRODUCTS_PER_PAGE
@@ -172,6 +199,11 @@ export function ProductGrid({
                 <ArrowUpAZ size={16} />
                 Nombre A–Z
               </SelectItem>
+
+              <SelectItem value="name-desc" className="flex items-center gap-2">
+                <ArrowUpAZ size={16} className="rotate-180" />
+                Nombre Z–A
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -203,25 +235,27 @@ export function ProductGrid({
       </div>
 
       {/* Load More */}
-      {hasMore && (
-        <div className="text-center mt-8">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={loadMore}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Cargando...
-              </>
-            ) : (
-              'Cargar más productos'
-            )}
-          </Button>
-        </div>
-      )}
-    </div>
+      {
+        hasMore && (
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={loadMore}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Cargando...
+                </>
+              ) : (
+                'Cargar más productos'
+              )}
+            </Button>
+          </div>
+        )
+      }
+    </div >
   );
 }

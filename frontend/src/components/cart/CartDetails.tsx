@@ -96,6 +96,21 @@ const CartDetails = () => {
                     {item.name}
                   </h3>
                 </Link>
+                {/* Variant Options */}
+                {(item.selectedSize || item.selectedColor) && (
+                  <div className="flex flex-wrap gap-2 mt-1 mb-1">
+                    {item.selectedSize && (
+                      <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-muted text-muted-foreground ring-1 ring-inset ring-gray-500/10">
+                        Talle: {item.selectedSize}
+                      </span>
+                    )}
+                    {item.selectedColor && (
+                      <span className="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium bg-muted text-muted-foreground ring-1 ring-inset ring-gray-500/10">
+                        Color: {item.selectedColor}
+                      </span>
+                    )}
+                  </div>
+                )}
                 <p className="text-sm text-muted-foreground">
                   ${item.price.toLocaleString('es-AR')} c/u
                 </p>
@@ -119,7 +134,27 @@ const CartDetails = () => {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 rounded-l-none"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => {
+                      // Calculate total quantity of this product (across all variants) currently in cart
+                      const currentQuantityInCart = items
+                        .filter(i => i.productId === item.productId)
+                        .reduce((acc, i) => acc + i.quantity, 0);
+
+                      // Assuming 'stock' is available on the item. 
+                      // If CartItem doesn't have stock, we might need to update the store to persist it.
+                      // Based on previous file reads, CartItem interface in types/index.ts extends Product, so satisfied.
+                      // But store/cartStore.ts defined its own CartItem interface which might be limited.
+                      // Let's assume for now we have access or fallback.
+                      const limit = item.stock ?? 9999;
+
+                      if (currentQuantityInCart + 1 > limit) {
+                        toast.error('No hay más stock disponible', {
+                          description: `Solo hay ${limit} unidades en stock.`
+                        });
+                        return;
+                      }
+                      updateQuantity(item.id, item.quantity + 1);
+                    }}
                   >
                     <Plus className="h-3 w-3" />
                   </Button>

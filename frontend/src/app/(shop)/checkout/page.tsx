@@ -145,7 +145,13 @@ export default function CheckoutPage() {
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
 
       const { data } = await strapi.post('/orders/checkout', {
-        items: items.map(i => ({ id: i.id, quantity: i.quantity })),
+        items: items.map(i => ({
+          product: i.productId, // Send real numeric/string ID of product
+          id: i.productId, // Fallback
+          quantity: i.quantity,
+          size: i.selectedSize,
+          color: i.selectedColor
+        })),
         email: formData.email,
         shippingAddress: {
           name: formData.name,

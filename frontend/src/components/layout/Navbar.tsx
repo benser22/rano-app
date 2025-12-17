@@ -215,14 +215,14 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 hover:bg-accent/80 transition-all duration-200"
+                className="relative h-10 w-10 hover:bg-accent/80 transition-all duration-200"
                 aria-label="Ver favoritos"
               >
-                <Heart className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+                <Heart className="h-6 w-6" />
                 {mounted && wishlistCount > 0 && (
                   <Badge
                     variant="secondary"
-                    className="absolute -top-0.5 -right-0.5 h-4 w-4 flex items-center justify-center p-0 text-[9px] font-bold bg-rose-500 text-white border-2 border-background animate-in zoom-in-50 duration-200"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] font-bold bg-rose-500 text-white border-2 border-background animate-in zoom-in-50 duration-200 shadow-sm"
                   >
                     {wishlistCount > 9 ? '9+' : wishlistCount}
                   </Badge>
@@ -238,13 +238,13 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 hover:bg-accent/80 transition-all duration-200"
+                className="relative h-10 w-10 hover:bg-accent/80 transition-all duration-200"
                 aria-label="Ver carrito"
               >
-                <ShoppingCart className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+                <ShoppingCart className="h-6 w-6" />
                 {mounted && cartCount > 0 && (
                   <Badge
-                    className="absolute -top-0.5 -right-0.5 h-4 w-4 sm:h-[18px] sm:w-[18px] flex items-center justify-center p-0 text-[9px] sm:text-[10px] bg-primary font-bold border-2 border-background animate-in zoom-in-50 duration-200"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary font-bold border-2 border-background animate-in zoom-in-50 duration-200 shadow-sm"
                   >
                     {cartCount > 99 ? '99+' : cartCount}
                   </Badge>

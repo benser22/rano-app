@@ -181,6 +181,12 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
 }
 
+/* Hide browser default password reveal button (Edge) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 /* Make placeholder text more distinguishable */
 input::placeholder,
 textarea::placeholder {

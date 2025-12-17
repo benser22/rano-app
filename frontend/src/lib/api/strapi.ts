@@ -57,6 +57,7 @@ export interface StoreConfigData {
   hoursSaturday: string;
   instagramUrl: string;
   facebookUrl: string;
+  tiktokUrl: string;
 }
 
 /**
@@ -90,6 +91,7 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
         facebookUrl:
           data.data.facebookUrl ||
           "https://www.facebook.com/p/Rano-Urban-61578961229095/",
+        tiktokUrl: data.data.tiktokUrl || "https://www.tiktok.com/@ranourban",
       };
     }
   } catch (error) {
@@ -109,5 +111,6 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
     hoursSaturday: "Sábados: 10:00 - 14:00",
     instagramUrl: "https://www.instagram.com/ranosurb/",
     facebookUrl: "https://www.facebook.com/p/Rano-Urban-61578961229095/",
+    tiktokUrl: "https://www.tiktok.com/@ranourban",
   };
 }

@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.5.0] - 2025-12-17
+
+### Added
+
+- **TikTok Integration**
+  - Added `tiktokUrl` field to Store Config in backend.
+  - Added TikTok icon (outline style) to Footer and Contact page.
+  - Links dynamically to the configured TikTok URL.
+- **Email Template Enhancements**
+  - Contact emails now link the Logo and Header Title to the frontend website.
+  - Added explicit text links ("Ir a la Web" / "Visitar Tienda") to email headers for better visibility when images are blocked.
+
+### Changed
+
+- **Email HTML Refactor**
+  - Refactored email header HTML to use independent `<a>` tags for each element (logo, title, text) to improve compatibility with email clients (Gmail, Outlook) and prevent link stripping.
+- **WhatsApp Button**
+  - Updated button color and pulse animation duration.
+- **Social Icons**
+  - TikTok icon updated to use a custom SVG outline that matches the style of existing Lucide icons.
+  - Added `cursor-pointer` to social links in Footer and Contact page.
+
 ## [0.4.1] - 2025-12-17
 
 ### Added
