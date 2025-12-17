@@ -74,7 +74,7 @@ export default {
           productAny.images && productAny.images.length > 0
             ? productAny.images[0].url.startsWith("http")
               ? productAny.images[0].url
-              : `${process.env.URL || "http://localhost:1337"}${productAny.images[0].url}`
+              : `${process.env.STRAPI_URL || "http://localhost:1337"}${productAny.images[0].url}`
             : "",
       });
     }
