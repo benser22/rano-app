@@ -28,6 +28,7 @@ interface StoreConfig {
   hoursSaturday: string;
   instagramUrl: string;
   facebookUrl: string;
+  tiktokUrl: string;
   address: string;
 }
 
@@ -41,6 +42,7 @@ const defaultConfig: StoreConfig = {
   hoursSaturday: "",
   instagramUrl: "",
   facebookUrl: "",
+  tiktokUrl: "",
   address: "",
 };
 
@@ -72,6 +74,7 @@ export const ConfigPage = () => {
             hoursSaturday: configData.hoursSaturday || "",
             instagramUrl: configData.instagramUrl || "",
             facebookUrl: configData.facebookUrl || "",
+            tiktokUrl: configData.tiktokUrl || "",
             address: configData.address || "",
           });
         }
@@ -229,9 +232,9 @@ export const ConfigPage = () => {
 
           {/* FILA 2: Horarios + Redes Sociales */}
           <RowContainer>
-            <SectionCard title="🕐 Horarios de Atención">
+            <SectionCard title="🕐 Horarios de Atención" style={{ flex: 2 }}>
               <Flex wrap="wrap" gap={4}>
-                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                <Box style={{ flex: '1 1 180px', minWidth: '160px' }}>
                   <Field.Root>
                     <Field.Label>Lunes a Viernes</Field.Label>
                     <TextInput
@@ -243,7 +246,7 @@ export const ConfigPage = () => {
                     />
                   </Field.Root>
                 </Box>
-                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                <Box style={{ flex: '1 1 180px', minWidth: '160px' }}>
                   <Field.Root>
                     <Field.Label>Sábados</Field.Label>
                     <TextInput
@@ -258,9 +261,9 @@ export const ConfigPage = () => {
               </Flex>
             </SectionCard>
 
-            <SectionCard title="📱 Redes Sociales">
+            <SectionCard title="📱 Redes Sociales" style={{ flex: 3 }}>
               <Flex wrap="wrap" gap={4}>
-                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                <Box style={{ flex: '1 1 180px', minWidth: '160px' }}>
                   <Field.Root>
                     <Field.Label>Instagram</Field.Label>
                     <TextInput
@@ -272,7 +275,7 @@ export const ConfigPage = () => {
                     />
                   </Field.Root>
                 </Box>
-                <Box style={{ flex: '1 1 150px', minWidth: '120px' }}>
+                <Box style={{ flex: '1 1 180px', minWidth: '160px' }}>
                   <Field.Root>
                     <Field.Label>Facebook</Field.Label>
                     <TextInput
@@ -280,6 +283,18 @@ export const ConfigPage = () => {
                       value={config.facebookUrl}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleChange("facebookUrl", e.target.value)
+                      }
+                    />
+                  </Field.Root>
+                </Box>
+                <Box style={{ flex: '1 1 180px', minWidth: '160px' }}>
+                  <Field.Root>
+                    <Field.Label>TikTok</Field.Label>
+                    <TextInput
+                      placeholder="https://tiktok.com/@..."
+                      value={config.tiktokUrl}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleChange("tiktokUrl", e.target.value)
                       }
                     />
                   </Field.Root>

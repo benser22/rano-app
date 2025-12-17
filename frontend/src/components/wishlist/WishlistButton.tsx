@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWishlistStore } from '@/store/wishlistStore';
@@ -14,8 +15,13 @@ interface WishlistButtonProps {
 }
 
 export function WishlistButton({ product, variant = 'icon', className }: WishlistButtonProps) {
+  const [mounted, setMounted] = useState(false);
   const { isInWishlist, toggleItem } = useWishlistStore();
-  const inWishlist = isInWishlist(product.id);
+  const inWishlist = mounted && isInWishlist(product.id);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();

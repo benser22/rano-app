@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 
@@ -61,10 +61,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-muted/30 flex items-start justify-center px-4 pt-24 pb-12">
+      <div className="w-full max-w-lg">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image
               src="/webp/rano_logo.webp"
@@ -78,8 +78,8 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-card rounded-xl shadow-lg p-8">
-          <div className="text-center mb-6">
+        <div className="bg-card rounded-xl shadow-lg p-6 sm:p-8">
+          <div className="text-center mb-4">
             <h1 className="text-2xl font-bold">Iniciar Sesión</h1>
             <p className="text-muted-foreground mt-1">
               Ingresá a tu cuenta para continuar
@@ -114,7 +114,7 @@ export default function LoginPage() {
             Continuar con Google
           </Button>
 
-          <div className="relative my-6">
+          <div className="relative my-4">
             <Separator />
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
               o con email
@@ -122,7 +122,7 @@ export default function LoginPage() {
           </div>
 
           {/* Email Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -181,20 +181,13 @@ export default function LoginPage() {
           </form>
 
           {/* Register Link */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
+          <p className="text-center text-sm text-muted-foreground mt-4">
             ¿No tenés cuenta?{' '}
             <Link href="/register" className="text-primary hover:underline font-medium">
               Registrate
             </Link>
           </p>
         </div>
-
-        {/* Back to home */}
-        <p className="text-center mt-6">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Volver a la tienda
-          </Link>
-        </p>
       </div>
     </div>
   );

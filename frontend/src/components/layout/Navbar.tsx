@@ -218,7 +218,7 @@ const Navbar = () => {
                 className="relative h-10 w-10 hover:bg-accent/80 transition-all duration-200"
                 aria-label="Ver favoritos"
               >
-                <Heart className="h-6 w-6" />
+                <Heart />
                 {mounted && wishlistCount > 0 && (
                   <Badge
                     variant="secondary"
@@ -241,7 +241,7 @@ const Navbar = () => {
                 className="relative h-10 w-10 hover:bg-accent/80 transition-all duration-200"
                 aria-label="Ver carrito"
               >
-                <ShoppingCart className="h-6 w-6" />
+                <ShoppingCart />
                 {mounted && cartCount > 0 && (
                   <Badge
                     className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-primary font-bold border-2 border-background animate-in zoom-in-50 duration-200 shadow-sm"

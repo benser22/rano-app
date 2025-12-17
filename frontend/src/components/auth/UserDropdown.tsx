@@ -29,7 +29,7 @@ export function UserDropdown() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-10 w-10 relative hover:bg-accent/80" aria-label="Menú de usuario">
-            <User className="h-6 w-6" />
+            <User />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl border border-border/50 shadow-xl">

@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { useAuthStore } from '@/store/authStore';
 import { Eye, EyeOff, Loader2, Mail, User } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:1337';
 
@@ -72,10 +72,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-muted/30 flex items-start justify-center px-4 pt-24 pb-12">
+      <div className="w-full max-w-xl">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image
               src="/webp/rano_logo.webp"
@@ -89,8 +89,8 @@ export default function RegisterPage() {
         </div>
 
         {/* Register Card */}
-        <div className="bg-card rounded-xl shadow-lg p-8">
-          <div className="text-center mb-6">
+        <div className="bg-card rounded-xl shadow-lg p-6 sm:p-8">
+          <div className="text-center mb-4">
             <h1 className="text-2xl font-bold">Crear Cuenta</h1>
             <p className="text-muted-foreground mt-1">
               Unite a la comunidad Rano Urban
@@ -125,7 +125,7 @@ export default function RegisterPage() {
             Registrarte con Google
           </Button>
 
-          <div className="relative my-6">
+          <div className="relative my-4">
             <Separator />
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
               o con email
@@ -133,7 +133,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Register Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div className="space-y-2">
               <Label htmlFor="username">Nombre de usuario</Label>
               <div className="relative">
@@ -166,37 +166,39 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <div className="relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="password">Contraseña</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Mínimo 6 caracteres"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
                 <Input
-                  id="password"
+                  id="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Mínimo 6 caracteres"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Repetí tu contraseña"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   disabled={isLoading}
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-              <Input
-                id="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Repetí tu contraseña"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                disabled={isLoading}
-              />
             </div>
 
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
@@ -223,20 +225,13 @@ export default function RegisterPage() {
           </form>
 
           {/* Login Link */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
+          <p className="text-center text-sm text-muted-foreground mt-2">
             ¿Ya tenés cuenta?{' '}
             <Link href="/login" className="text-primary hover:underline font-medium">
               Iniciá sesión
             </Link>
           </p>
         </div>
-
-        {/* Back to home */}
-        <p className="text-center mt-6">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Volver a la tienda
-          </Link>
-        </p>
       </div>
     </div>
   );

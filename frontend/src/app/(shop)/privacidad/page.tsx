@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
+import { BackButton } from '@/components/ui/back-button';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad',
@@ -11,16 +11,10 @@ export default function PrivacidadPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Volver al inicio
-        </Link>
+        <BackButton className="mb-8" />
 
         <h1 className="text-4xl font-bold mb-8">Política de Privacidad</h1>
-        
+
         <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
           <p className="text-muted-foreground">
             Última actualización: {new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -38,7 +32,7 @@ export default function PrivacidadPage() {
               <li>Te ponés en contacto con nosotros</li>
             </ul>
             <p className="text-muted-foreground mt-4">
-              Esta información puede incluir: nombre, dirección de correo electrónico, dirección postal, 
+              Esta información puede incluir: nombre, dirección de correo electrónico, dirección postal,
               número de teléfono e información de pago.
             </p>
           </section>
@@ -71,8 +65,8 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">4. Seguridad de los Datos</h2>
             <p className="text-muted-foreground">
-              Implementamos medidas de seguridad técnicas y organizativas para proteger tu información personal 
-              contra acceso no autorizado, alteración, divulgación o destrucción. Los pagos se procesan de forma 
+              Implementamos medidas de seguridad técnicas y organizativas para proteger tu información personal
+              contra acceso no autorizado, alteración, divulgación o destrucción. Los pagos se procesan de forma
               segura a través de Mercado Pago.
             </p>
           </section>
@@ -80,8 +74,8 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">5. Cookies</h2>
             <p className="text-muted-foreground">
-              Utilizamos cookies y tecnologías similares para mejorar tu experiencia en nuestro sitio. Las cookies 
-              nos permiten recordar tus preferencias y analizar cómo se utiliza nuestro sitio. Podés configurar 
+              Utilizamos cookies y tecnologías similares para mejorar tu experiencia en nuestro sitio. Las cookies
+              nos permiten recordar tus preferencias y analizar cómo se utiliza nuestro sitio. Podés configurar
               tu navegador para rechazar cookies, aunque esto puede afectar algunas funcionalidades.
             </p>
           </section>
@@ -105,7 +99,7 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">7. Retención de Datos</h2>
             <p className="text-muted-foreground">
-              Conservamos tu información personal mientras mantengas una cuenta con nosotros o según sea necesario 
+              Conservamos tu información personal mientras mantengas una cuenta con nosotros o según sea necesario
               para cumplir con nuestras obligaciones legales, resolver disputas y hacer cumplir nuestros acuerdos.
             </p>
           </section>
@@ -113,7 +107,7 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">8. Cambios a esta Política</h2>
             <p className="text-muted-foreground">
-              Podemos actualizar esta política de privacidad periódicamente. Te notificaremos sobre cambios 
+              Podemos actualizar esta política de privacidad periódicamente. Te notificaremos sobre cambios
               significativos publicando la nueva política en nuestro sitio web.
             </p>
           </section>
@@ -121,7 +115,7 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">9. Contacto</h2>
             <p className="text-muted-foreground">
-              Si tenés preguntas sobre esta política de privacidad, podés contactarnos a través de nuestra 
+              Si tenés preguntas sobre esta política de privacidad, podés contactarnos a través de nuestra
               página de <Link href="/contacto" className="text-primary hover:underline">contacto</Link>.
             </p>
           </section>

@@ -102,7 +102,7 @@ export default function FavoritesPage() {
                         e.preventDefault();
                         handleRemove(item.id, item.name);
                       }}
-                      className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-destructive transition-colors"
+                      className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white text-destructive transition-colors cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
