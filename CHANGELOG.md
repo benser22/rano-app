@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.4.1] - 2025-12-17
+
+### Added
+
+- **ProductForm 3-Row Layout** - Reorganized form with responsive grid
+  - Row 1: Basic Info + Images (equal height)
+  - Row 2: Prices & Stock + Category + Options + Tags (4 cards)
+  - Row 3: Sizes + Colors (with flex proportions)
+- **RowContainer Component** - Flexbox container for equal-height cards
+- **Predefined Tags** - Clickable tag buttons (Nuevo, Oferta, Destacado, etc.)
+- **Visual Icons** - Category (📂) and Options (mini-carousel) with dynamic opacity
+- **Image Upload Improvements**
+  - Multi-file drag & drop support
+  - Individual error handling per file
+  - Success/error count feedback
+  - Larger upload icon (64px)
+
+### Changed
+
+- SKU and Slug fields now use flex-wrap for responsive layout
+- SectionCard accepts style prop for custom flex values
+- CustomGrid uses transient props ($cols, $tabletCols, $mobileCols)
+- Increased image size limit from 3MB to 5MB
+- Form header is now responsive with wrap
+
+### Fixed
+
+- React DOM warnings for styled-components props
+- Image upload state getting stuck after errors
+- Tags, sizes, and colors now show as removable Tag components
+
+---
+
 ## [0.4.0] - 2025-12-16
 
 ### Added
