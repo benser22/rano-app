@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Search, X, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { fetchAPI, getMediaUrl } from '@/lib/api/strapi';
+import { clientFetchAPI, getMediaUrl } from '@/lib/api/strapi';
 import { Product } from '@/types';
 import { ImgWithFallback } from '@/components/ui/image-with-fallback';
 
@@ -39,12 +39,20 @@ export function SearchCombobox({
 
     setIsLoading(true);
     try {
-      const data = await fetchAPI('/products', {
+      // Split query into words and filter empty
+      const words = searchQuery.trim().split(/\s+/).filter(w => w.length > 0);
+
+      // Build filter: each word must match name OR description
+      const wordFilters = words.map(word => ({
+        $or: [
+          { name: { $containsi: word } },
+          { description: { $containsi: word } },
+        ],
+      }));
+
+      const data = await clientFetchAPI('/products', {
         filters: {
-          $or: [
-            { name: { $containsi: searchQuery } },
-            { description: { $containsi: searchQuery } },
-          ],
+          $and: wordFilters,
         },
         populate: ['images'],
         pagination: { limit: 5 },

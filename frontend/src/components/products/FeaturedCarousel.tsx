@@ -40,7 +40,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
               key={product.id}
               className="pl-4 basis-full sm:basis-1/2 lg:basis-1/4"
             >
-              <ProductCard product={product} />
+              <ProductCard product={product} hideFeaturedBadge />
             </CarouselItem>
           ))}
         </CarouselContent>

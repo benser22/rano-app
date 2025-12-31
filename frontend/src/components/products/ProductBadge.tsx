@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Star } from 'lucide-react';
 
 type BadgeType = 'new' | 'sale' | 'outOfStock' | 'featured' | 'limited';
 
@@ -13,7 +14,21 @@ interface ProductBadgeProps {
  * Product badge for status indicators (New, Sale, Out of Stock, etc.)
  */
 export function ProductBadge({ type, discount, className }: ProductBadgeProps) {
-  const badgeConfig: Record<BadgeType, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  // Special render for featured badge - just a star icon
+  if (type === 'featured') {
+    return (
+      <div
+        className={cn(
+          'absolute z-10 w-8 h-8 rounded-full bg-amber-500/90 backdrop-blur-sm flex items-center justify-center shadow-lg',
+          className
+        )}
+      >
+        <Star className="w-4 h-4 text-white fill-white" />
+      </div>
+    );
+  }
+
+  const badgeConfig: Record<Exclude<BadgeType, 'featured'>, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
     new: {
       label: 'Nuevo',
       variant: 'default',
@@ -25,10 +40,6 @@ export function ProductBadge({ type, discount, className }: ProductBadgeProps) {
     outOfStock: {
       label: 'Sin Stock',
       variant: 'secondary',
-    },
-    featured: {
-      label: 'Destacado',
-      variant: 'default',
     },
     limited: {
       label: 'Edición Limitada',
@@ -45,7 +56,6 @@ export function ProductBadge({ type, discount, className }: ProductBadgeProps) {
         'absolute z-10 font-semibold',
         type === 'sale' && 'bg-red-500 hover:bg-red-600',
         type === 'new' && 'bg-primary hover:bg-primary/90',
-        type === 'featured' && 'bg-amber-500 hover:bg-amber-600',
         type === 'limited' && 'border-primary text-primary',
         className
       )}
@@ -72,7 +82,7 @@ export function ProductBadges({
   className?: string;
 }) {
   const hasBadges = isNew || isFeatured || discount || stock === 0;
-  
+
   if (!hasBadges) return null;
 
   return (

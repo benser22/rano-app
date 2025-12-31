@@ -37,6 +37,35 @@ export const fetchAPI = async (path: string, params: any = {}) => {
   }
 };
 
+// Client-side fetch that always uses the public URL (for use client components)
+const PUBLIC_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001";
+
+export const clientFetchAPI = async (path: string, params: any = {}) => {
+  try {
+    const queryString = qs.stringify(params, { encodeValuesOnly: true });
+    const url = `${PUBLIC_API_URL}/api${path}${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching ${path}:`, error);
+    throw error;
+  }
+};
+
 // Default navbar categories (fallback)
 const DEFAULT_NAVBAR_CATEGORIES = [
   { name: "Remeras", slug: "remeras" },

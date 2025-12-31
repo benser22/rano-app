@@ -9,16 +9,17 @@ import { getMediaUrl } from '@/lib/api/strapi';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import { PriceDisplay } from '@/components/products/PriceDisplay';
 import { ProductBadge } from '@/components/products/ProductBadge';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, Star } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { WishlistButton } from '@/components/wishlist/WishlistButton';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
+  hideFeaturedBadge?: boolean;
 }
 
-const ProductCard = ({ product }: ProductCardProps) => {
+const ProductCard = ({ product, hideFeaturedBadge = false }: ProductCardProps) => {
   const imageUrl = product.images && product.images.length > 0
     ? getMediaUrl(product.images[0].url)
     : '/avif/placeholder.avif';
@@ -92,7 +93,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 pointer-events-none">
         {product.stock <= 0 && <ProductBadge type="outOfStock" className="relative" />}
         {hasDiscount && <ProductBadge type="sale" discount={discountPercent} className="relative" />}
-        {product.featured && <ProductBadge type="featured" className="relative" />}
       </div>
 
       {/* Wishlist button */}
@@ -112,6 +112,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
               product.stock <= 0 && "opacity-60 grayscale"
             )}
           />
+
+          {/* Featured Banner at bottom */}
+          {product.featured && !hideFeaturedBadge && (
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-[2px] py-1.5 px-3 flex justify-center">
+              <span className="text-white/90 text-xs font-medium uppercase tracking-wider flex items-center gap-1.5">
+                <Star className="w-3 h-3 fill-current" />
+                Destacado
+              </span>
+            </div>
+          )}
 
           {/* Out of Stock Overlay */}
           {product.stock <= 0 && (
