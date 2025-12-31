@@ -25,5 +25,13 @@ export default {
         policies: ["admin::isAuthenticatedAdmin"],
       },
     },
+    {
+      method: "PUT",
+      path: "/products/:documentId",
+      handler: "quickLoader.updateProduct",
+      config: {
+        policies: ["admin::isAuthenticatedAdmin"],
+      },
+    },
   ],
 };

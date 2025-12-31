@@ -4,12 +4,29 @@ const nextConfig: NextConfig = {
   // Enable standalone output for Docker deployment
   output: "standalone",
   images: {
-    // Disable optimization in development to avoid "private IP" blocking
-    unoptimized: process.env.NODE_ENV === "development",
+    // Disable optimization to avoid private IP blocking in Docker
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "placehold.co",
+      },
+      // For local Docker development
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "4001",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "1337",
+      },
+      // For Docker internal communication
+      {
+        protocol: "http",
+        hostname: "strapi",
+        port: "1337",
       },
       // Allow images from the configured API URL
       ...getRemotePatternFromUrl(

@@ -11,6 +11,9 @@ RUN apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Clean dist to avoid stale routes/controllers
+RUN rm -rf dist
+
 # Aumentar heap para evitar OOM en build
 ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build

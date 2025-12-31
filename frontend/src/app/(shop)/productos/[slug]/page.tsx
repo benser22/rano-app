@@ -10,6 +10,8 @@ import { Separator } from '@/components/ui/separator';
 import ProductCard from '@/components/products/ProductCard';
 import { ProductGallery } from '@/components/products/ProductGallery';
 
+export const dynamic = 'force-dynamic';
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

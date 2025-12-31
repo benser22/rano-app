@@ -98,6 +98,42 @@ const bcrypt = require("bcryptjs");
     }
 
     // ============================================
+    // 1.5 CREATE STORE CONFIG (singleType)
+    // ============================================
+    const storeConfigExists = await strapi.db
+      .query("api::store-config.store-config")
+      .findOne();
+
+    if (!storeConfigExists) {
+      await strapi.db.query("api::store-config.store-config").create({
+        data: {
+          storeName: "Rano Urban",
+          whatsappNumber: "3815010399",
+          contactEmail: "info@ranourban.com",
+          freeShippingMin: 30000,
+          shippingCost: 1500,
+          hoursWeekdays: "Lunes a Viernes: 9:00 - 20:00",
+          hoursSaturday: "Sábados: 10:00 - 14:00",
+          instagramUrl: "https://www.instagram.com/ranosurb/",
+          facebookUrl: "https://www.facebook.com/p/Rano-Urban-61578961229095/",
+          tiktokUrl: "https://www.tiktok.com/@ranourban",
+          address: "Av. Belgrano 3659, San Miguel de Tucumán",
+          navbarCategories: [
+            { name: "Remeras", slug: "remeras" },
+            { name: "Jeans", slug: "jeans" },
+            { name: "Buzos", slug: "buzos" },
+            { name: "Vestidos", slug: "vestidos" },
+            { name: "Polleras", slug: "polleras" },
+            { name: "Camisas", slug: "camisas" },
+          ],
+        },
+      });
+      console.log("✓ Created store configuration");
+    } else {
+      console.log("○ Store config already exists");
+    }
+
+    // ============================================
     // 2. CREATE PRODUCTS
     // ============================================
     const productsData = [

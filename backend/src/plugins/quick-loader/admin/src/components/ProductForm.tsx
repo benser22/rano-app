@@ -422,6 +422,17 @@ export const ProductForm = ({ mode }: ProductFormProps) => {
           `/content-manager/collection-types/api::product.product/${params.id}`,
           payload,
         );
+        // Publicar el producto después de editarlo
+        try {
+          await post(
+            `/content-manager/collection-types/api::product.product/${params.id}/actions/publish`,
+            {
+              documentId: params.id,
+            },
+          );
+        } catch (publishErr) {
+          console.warn("Failed to auto-publish after edit:", publishErr);
+        }
       } else {
         // Crear producto usando Content Manager
         const response = await post(

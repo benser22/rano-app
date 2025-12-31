@@ -91,7 +91,7 @@ export default async function Home() {
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <Link href="/productos?category=sale">
+                <Link href="/productos?category=ofertas">
                   <Button
                     size="lg"
                     className="text-lg px-8 py-6 bg-white/90 text-black hover:bg-white font-semibold"

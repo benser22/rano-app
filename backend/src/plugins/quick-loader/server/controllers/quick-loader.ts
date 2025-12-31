@@ -151,6 +151,39 @@ const controller = ({ strapi }: { strapi: Core.Strapi }) => ({
       ctx.throw(500, error);
     }
   },
+
+  // Actualizar producto y publicarlo directamente
+  async updateProduct(ctx: any) {
+    try {
+      const { documentId } = ctx.params;
+      const data = ctx.request.body;
+
+      const product = await strapi.documents("api::product.product").update({
+        documentId,
+        data: {
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          price: data.price,
+          comparePrice: data.comparePrice || null,
+          sku: data.sku,
+          stock: data.stock,
+          sizes: data.sizes || [],
+          colors: data.colors || [],
+          tags: data.tags || [],
+          featured: data.featured || false,
+          category: data.category || null,
+          images: data.images || [],
+        } as any,
+        status: "published",
+      });
+
+      ctx.body = { data: product };
+    } catch (error) {
+      strapi.log.error("Error updating product:", error);
+      ctx.throw(500, error);
+    }
+  },
 });
 
 export default controller;

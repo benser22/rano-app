@@ -92,6 +92,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 pointer-events-none">
         {product.stock <= 0 && <ProductBadge type="outOfStock" className="relative" />}
         {hasDiscount && <ProductBadge type="sale" discount={discountPercent} className="relative" />}
+        {product.featured && <ProductBadge type="featured" className="relative" />}
       </div>
 
       {/* Wishlist button */}

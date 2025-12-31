@@ -111,9 +111,10 @@ export async function getProduct(
 export async function createProduct(
   data: ProductInput,
 ): Promise<{ data: Product }> {
-  return fetchWithAuth(`${API_BASE}/products`, {
+  // Use plugin endpoint that auto-publishes
+  return fetchWithAuth(`/${PLUGIN_ID}/products`, {
     method: "POST",
-    body: JSON.stringify({ data }),
+    body: JSON.stringify(data),
   });
 }
 
@@ -121,9 +122,10 @@ export async function updateProduct(
   documentId: string,
   data: Partial<ProductInput>,
 ): Promise<{ data: Product }> {
-  return fetchWithAuth(`${API_BASE}/products/${documentId}`, {
+  // Use plugin endpoint that auto-publishes
+  return fetchWithAuth(`/${PLUGIN_ID}/products/${documentId}`, {
     method: "PUT",
-    body: JSON.stringify({ data }),
+    body: JSON.stringify(data),
   });
 }
 

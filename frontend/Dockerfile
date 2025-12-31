@@ -13,6 +13,9 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=https://rano-api.22studios.xyz
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
+# Clean cache to avoid stale type validation
+RUN rm -rf .next
+
 RUN npm run build
 
 FROM node:20-alpine AS runner

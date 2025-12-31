@@ -1,12 +1,18 @@
 import axios from "axios";
 import qs from "qs";
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
+// Use different URLs for server-side (Docker internal) vs client-side (browser)
+const isServer = typeof window === "undefined";
+const STRAPI_URL = isServer
+  ? process.env.API_URL || "http://localhost:1337"
+  : process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337";
 
 export const strapi = axios.create({
   baseURL: `${STRAPI_URL}/api`,
   headers: {
     "Content-Type": "application/json",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    Pragma: "no-cache",
   },
   paramsSerializer: {
     serialize: (params) => qs.stringify(params, { encodeValuesOnly: true }),
@@ -16,7 +22,9 @@ export const strapi = axios.create({
 export const getMediaUrl = (url: string | null) => {
   if (!url) return null;
   if (url.startsWith("http") || url.startsWith("//")) return url;
-  return `${STRAPI_URL}${url}`;
+
+  // Always use public URL - images are displayed in the browser
+  return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4001"}${url}`;
 };
 
 export const fetchAPI = async (path: string, params: any = {}) => {

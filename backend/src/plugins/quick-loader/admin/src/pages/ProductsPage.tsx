@@ -205,7 +205,7 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
             <Loader>Cargando productos...</Loader>
           </Flex>
         ) : (
-          <Table colCount={7} rowCount={products.length}>
+          <Table colCount={6} rowCount={products.length}>
             <Thead>
               <Tr>
                 <Th><Typography variant="sigma">SKU</Typography></Th>
@@ -213,7 +213,6 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
                 <Th><Typography variant="sigma">Categoría</Typography></Th>
                 <Th><Typography variant="sigma">Precio</Typography></Th>
                 <Th><Typography variant="sigma">Stock</Typography></Th>
-                <Th><Typography variant="sigma">Estado</Typography></Th>
                 <Th><Typography variant="sigma">Acciones</Typography></Th>
               </Tr>
             </Thead>
@@ -272,14 +271,6 @@ export const ProductsPage = ({ mode = "list" }: ProductsPageProps) => {
                         }
                       >
                         {product.stock}
-                      </Badge>
-                    </Td>
-                    <Td>
-                      <Badge
-                        backgroundColor={product.publishedAt ? "success100" : "neutral150"}
-                        textColor={product.publishedAt ? "success600" : "neutral600"}
-                      >
-                        {product.publishedAt ? "Publicado" : "Borrador"}
                       </Badge>
                     </Td>
                     <Td>
