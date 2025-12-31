@@ -6,6 +6,49 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ---
 
+## [0.6.0] - 2025-12-30
+
+### Added
+
+- **GitHub Container Registry (GHCR) Deployment**
+  - Docker images now built in GitHub Actions and pushed to GHCR
+  - Server pulls pre-built images instead of building locally
+  - Significantly faster deployments (~30s vs ~3-5min)
+  - Added `docker-compose.prod.yml` for production
+- **Multi-word Search**
+  - Search now splits query into words and matches all of them
+  - "jeans az" now finds "Jeans Slim Fit Azul"
+- **Client-side API Function**
+  - Added `clientFetchAPI` for use in client components
+  - Avoids Docker internal URL issues during SSR hydration
+
+### Changed
+
+- **Featured Badge UI**
+  - Replaced top badge with subtle bottom banner
+  - Semi-transparent black bar with Star icon + "Destacado" text
+  - Hidden in featured carousel (redundant)
+- **ProductCard**
+  - Added `hideFeaturedBadge` prop for conditional display
+- **Checkout Images**
+  - Fixed image loading by checking both `item.image` and `item.images[0].url`
+
+### Fixed
+
+- **CORS Error on Checkout**
+  - Removed `Cache-Control` and `Pragma` headers from Axios config
+  - These headers were not allowed by Strapi's CORS policy
+- **Products Auto-publish**
+  - Products created/edited via quick-loader now auto-publish
+  - Added publish call after edit in ProductForm
+
+### Removed
+
+- **Estado Column in Quick-Loader Products Table**
+  - No longer needed since all products auto-publish
+
+---
+
 ## [0.5.0] - 2025-12-17
 
 ### Added
