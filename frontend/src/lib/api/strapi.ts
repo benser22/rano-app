@@ -11,8 +11,6 @@ export const strapi = axios.create({
   baseURL: `${STRAPI_URL}/api`,
   headers: {
     "Content-Type": "application/json",
-    "Cache-Control": "no-cache, no-store, must-revalidate",
-    Pragma: "no-cache",
   },
   paramsSerializer: {
     serialize: (params) => qs.stringify(params, { encodeValuesOnly: true }),
