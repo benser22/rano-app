@@ -1,17 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable standalone output for Docker deployment
   output: "standalone",
   images: {
-    // Disable optimization to avoid private IP blocking in Docker
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "placehold.co",
       },
-      // For local Docker development
+      {
+        protocol: "https",
+        hostname: "rano-api.22studios.xyz",
+      },
       {
         protocol: "http",
         hostname: "localhost",
@@ -22,13 +22,11 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
         port: "1337",
       },
-      // For Docker internal communication
       {
         protocol: "http",
         hostname: "strapi",
         port: "1337",
       },
-      // Allow images from the configured API URL
       ...getRemotePatternFromUrl(
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337",
       ),
