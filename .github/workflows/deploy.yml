@@ -1,40 +1,91 @@
-name: Deploy to VPS
+name: Build and Deploy
 
 on:
   push:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/frontend
+  BACKEND_IMAGE: ghcr.io/${{ github.repository }}/backend
+
 jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:latest
+            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:latest
+            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   deploy:
+    needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
-          timeout: 15m
-          command_timeout: 10m
+          timeout: 10m
+          command_timeout: 5m
+          envs: GHCR_TOKEN
           script: |
             cd ~/rano-app
             git pull origin main
 
-            # Pre-deploy cleanup: remove build cache to free space
-            docker builder prune -f
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u benser22 --password-stdin
 
-            docker-compose down
-            docker-compose build
-            docker-compose up -d
+            docker pull ghcr.io/benser22/rano-app/frontend:latest
+            docker pull ghcr.io/benser22/rano-app/backend:latest
 
-            # Post-deploy cleanup: remove dangling images and unused networks
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml up -d
+
             docker image prune -f
-            docker network prune -f
-
-            echo "Deployment completed successfully!"
-            docker-compose ps
-            echo "Disk usage:"
-            df -h | head -3
+            echo "Deployment completed!"
+            docker-compose -f docker-compose.prod.yml ps

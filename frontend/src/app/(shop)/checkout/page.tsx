@@ -419,7 +419,9 @@ export default function CheckoutPage() {
                 {/* Items */}
                 <div className="space-y-3 mb-6">
                   {items.map((item) => {
-                    const imageUrl = item.image ? getMediaUrl(item.image) : '/avif/placeholder.avif';
+                    // Try item.image first, then item.images[0].url
+                    const rawImageUrl = item.image || item.images?.[0]?.url;
+                    const imageUrl = rawImageUrl ? getMediaUrl(rawImageUrl) : '/avif/placeholder.avif';
                     return (
                       <div key={item.id} className="flex items-center gap-3 py-2">
                         <div className="w-16 h-16 bg-muted rounded-md overflow-hidden shrink-0">
