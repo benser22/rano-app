@@ -349,3 +349,32 @@ Para problemas o preguntas:
 ---
 
 **Desarrollado con ❤️ para Rano Urban**
+
+---
+
+## 🔐 Lista de Permisos para Strapi
+
+Para que la tienda funcione correctamente, debes habilitar los siguientes permisos en el panel de Strapi (**Settings** > **Users & Permissions Plugin** > **Roles**):
+
+### 👥 Rol: Public
+*Permisos para visitantes sin cuenta.*
+
+- **Product**: `find`, `findOne`, `getFilters`
+- **Category**: `find`, `findOne`
+- **Store-config**: `find`
+- **Order**: `checkout`
+- **Contact**: `send`
+- **Webhook**: `handleMercadoPago`
+- **Auth**: `googleCallback`
+
+### 🔑 Rol: Authenticated
+*Permisos para usuarios logueados (además de los de Public).*
+
+- **Product**: `find`, `findOne`, `getFilters`
+- **Category**: `find`, `findOne`
+- **Store-config**: `find`
+- **Order**: `checkout`, `myOrders`
+- **Contact**: `send`
+- **Users-permissions** (User): `me`, `update`
+
+> ⚠️ **Importante**: No habilites permisos de `create`, `update` o `delete` en productos o categorías para estos roles.

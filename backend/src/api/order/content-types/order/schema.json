@@ -50,6 +50,9 @@
     },
     "email": {
       "type": "email"
+    },
+    "phone": {
+      "type": "string"
     }
   }
 }

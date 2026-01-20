@@ -1,26 +1,47 @@
 "use client";
 
-import { useEffect, Suspense } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useCartStore } from '@/store/cartStore';
-import { Button } from '@/components/ui/button';
-import { CheckCircle2, Package, Home, ShoppingBag } from 'lucide-react';
+import { useEffect, Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
+import { useStoreConfig } from "@/lib/useStoreConfig";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle2,
+  Package,
+  Home,
+  ShoppingBag,
+  MessageCircle,
+} from "lucide-react";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const { clearCart } = useCartStore();
+  const { config } = useStoreConfig();
 
-  const paymentId = searchParams.get('payment_id');
-  const status = searchParams.get('status');
-  const externalReference = searchParams.get('external_reference');
+  const paymentId = searchParams.get("payment_id");
+  const status = searchParams.get("status");
+  const externalReference = searchParams.get("external_reference");
 
   // Clear cart on successful payment
   useEffect(() => {
-    if (status === 'approved') {
+    if (status === "approved") {
       clearCart();
     }
   }, [status, clearCart]);
+
+  const handleWhatsAppContact = () => {
+    if (!config.whatsappNumber) return;
+
+    // Format admin phone
+    let cleanPhone = config.whatsappNumber.replace(/\D/g, "");
+    if (cleanPhone.startsWith("0")) cleanPhone = cleanPhone.substring(1);
+    if (!cleanPhone.startsWith("54")) cleanPhone = "549" + cleanPhone; // Argentina format
+
+    const message = `¡Hola! Acabo de realizar una compra con el pedido #${externalReference || "nuevo"}. Quería confirmar los detalles del envío.`;
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, "_blank");
+  };
 
   return (
     <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
@@ -31,7 +52,8 @@ function SuccessContent() {
 
         <h1 className="text-2xl font-bold mb-2">¡Pago Exitoso!</h1>
         <p className="text-muted-foreground mb-6">
-          Tu pedido fue procesado correctamente. Podés ver los detalles en tu historial de compras.
+          Tu pedido fue procesado correctamente. Podés ver los detalles en tu
+          historial de compras.
         </p>
 
         {externalReference && (
@@ -54,8 +76,16 @@ function SuccessContent() {
         </div>
 
         <div className="flex flex-col gap-3 mt-8">
+          <Button
+            onClick={handleWhatsAppContact}
+            className="w-full gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white border-none"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Informar pago por WhatsApp
+          </Button>
+
           <Link href="/pedidos" className="w-full">
-            <Button className="w-full gap-2">
+            <Button variant="outline" className="w-full gap-2">
               <ShoppingBag className="h-4 w-4" />
               Ver Mis Pedidos
             </Button>
@@ -74,11 +104,13 @@ function SuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse">Cargando...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-pulse">Cargando...</div>
+        </div>
+      }
+    >
       <SuccessContent />
     </Suspense>
   );

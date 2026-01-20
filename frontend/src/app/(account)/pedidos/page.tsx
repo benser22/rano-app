@@ -1,21 +1,30 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuthStore } from '@/store/authStore';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { ChevronRight, User, Package, ShoppingBag, Loader2, MapPin, CreditCard, Truck } from 'lucide-react';
-import { useStoreConfig } from '@/lib/useStoreConfig';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  ChevronRight,
+  User,
+  Package,
+  ShoppingBag,
+  Loader2,
+  MapPin,
+  CreditCard,
+  Truck,
+} from "lucide-react";
+import { useStoreConfig } from "@/lib/useStoreConfig";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { getMediaUrl } from '@/lib/api/strapi';
-import { ImgWithFallback } from '@/components/ui/image-with-fallback';
+import { getMediaUrl } from "@/lib/api/strapi";
+import { ImgWithFallback } from "@/components/ui/image-with-fallback";
 
 interface OrderItem {
   id: number;
@@ -56,7 +65,7 @@ export default function OrdersPage() {
   useEffect(() => {
     // Wait for store to hydrate before checking auth
     if (isHydrated && !isAuthenticated) {
-      router.push('/login?redirect=/pedidos');
+      router.push("/login?redirect=/pedidos");
     }
   }, [isAuthenticated, isHydrated, router]);
 
@@ -68,15 +77,15 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const { strapi } = await import('@/lib/api/strapi');
-      const { data } = await strapi.get('/orders/my-orders', {
+      const { strapi } = await import("@/lib/api/strapi");
+      const { data } = await strapi.get("/orders/my-orders", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       setOrders(data.data || []);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
     } finally {
       setLoadingOrders(false);
     }
@@ -84,16 +93,39 @@ export default function OrdersPage() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; className: string }> = {
-      pending: { label: 'Pendiente', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-      paid: { label: 'Pagado', className: 'bg-green-100 text-green-800 border-green-200' },
-      processing: { label: 'Procesando', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-      shipped: { label: 'Enviado', className: 'bg-purple-100 text-purple-800 border-purple-200' },
-      delivered: { label: 'Entregado', className: 'bg-green-100 text-green-800 border-green-200' },
-      cancelled: { label: 'Cancelado', className: 'bg-red-100 text-red-800 border-red-200' },
+      pending: {
+        label: "Pendiente",
+        className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      },
+      paid: {
+        label: "Pagado",
+        className: "bg-green-100 text-green-800 border-green-200",
+      },
+      processing: {
+        label: "Procesando",
+        className: "bg-blue-100 text-blue-800 border-blue-200",
+      },
+      shipped: {
+        label: "Enviado",
+        className: "bg-purple-100 text-purple-800 border-purple-200",
+      },
+      delivered: {
+        label: "Entregado",
+        className: "bg-green-100 text-green-800 border-green-200",
+      },
+      cancelled: {
+        label: "Cancelado",
+        className: "bg-red-100 text-red-800 border-red-200",
+      },
     };
-    const config = statusConfig[status] || { label: status, className: 'bg-gray-100 text-gray-800 border-gray-200' };
+    const config = statusConfig[status] || {
+      label: status,
+      className: "bg-gray-100 text-gray-800 border-gray-200",
+    };
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${config.className}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-medium border ${config.className}`}
+      >
         {config.label}
       </span>
     );
@@ -114,7 +146,12 @@ export default function OrdersPage() {
       <div className="bg-secondary text-secondary-foreground py-8 mb-8">
         <div className="container mx-auto px-4">
           <nav className="flex items-center gap-2 text-sm text-secondary-foreground/60 mb-2">
-            <Link href="/" className="hover:text-secondary-foreground transition-colors">Inicio</Link>
+            <Link
+              href="/"
+              className="hover:text-secondary-foreground transition-colors"
+            >
+              Inicio
+            </Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-secondary-foreground">Mis Pedidos</span>
           </nav>
@@ -129,10 +166,18 @@ export default function OrdersPage() {
             <div className="bg-card rounded-xl p-6 shadow-sm sticky top-24 border border-border/50">
               <div className="flex flex-col items-center text-center mb-6">
                 <div className="h-20 w-20 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-3xl mb-3 shadow-md">
-                  {user.username?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+                  {user.username?.charAt(0).toUpperCase() ||
+                    user.email.charAt(0).toUpperCase()}
                 </div>
-                <h2 className="font-bold text-lg">{user.username || 'Usuario'}</h2>
-                <p className="text-sm text-muted-foreground truncate max-w-full px-2" title={user.email}>{user.email}</p>
+                <h2 className="font-bold text-lg">
+                  {user.username || "Usuario"}
+                </h2>
+                <p
+                  className="text-sm text-muted-foreground truncate max-w-full px-2"
+                  title={user.email}
+                >
+                  {user.email}
+                </p>
               </div>
 
               <Separator className="my-4" />
@@ -175,17 +220,26 @@ export default function OrdersPage() {
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                     <ShoppingBag className="h-8 w-8 text-muted-foreground/50" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No tenés pedidos aún</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    No tenés pedidos aún
+                  </h3>
                   <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                    Explorá nuestra colección y encontrá tu estilo ideal. Tus compras aparecerán aquí.
+                    Explorá nuestra colección y encontrá tu estilo ideal. Tus
+                    compras aparecerán aquí.
                   </p>
                   <Link href="/productos">
-                    <Button size="lg" className="rounded-full px-8">Explorar Productos</Button>
+                    <Button size="lg" className="rounded-full px-8">
+                      Explorar Productos
+                    </Button>
                   </Link>
                 </div>
               ) : (
                 <div className="p-4 sm:p-6">
-                  <Accordion type="single" collapsible className="w-full space-y-4">
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className="w-full space-y-4"
+                  >
                     {orders.map((order) => (
                       <AccordionItem
                         key={order.id}
@@ -195,21 +249,27 @@ export default function OrdersPage() {
                         <AccordionTrigger className="hover:no-underline py-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full pr-4 text-left gap-4">
                             <div className="flex flex-col gap-1">
-                              <span className="font-mono text-sm font-semibold text-primary">#{order.externalReference?.slice(-8) || order.id}</span>
+                              <span className="font-mono text-sm font-semibold text-primary">
+                                #
+                                {order.externalReference?.slice(-8) || order.id}
+                              </span>
                               <span className="text-sm text-muted-foreground capitalize">
-                                {new Date(order.createdAt).toLocaleDateString('es-AR', {
-                                  weekday: 'short',
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric'
-                                })}
+                                {new Date(order.createdAt).toLocaleDateString(
+                                  "es-AR",
+                                  {
+                                    weekday: "short",
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  },
+                                )}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-4 sm:gap-6">
                               {getStatusBadge(order.status)}
-                              <span className="font-bold text-lg min-w-[80px] text-right">
-                                ${order.total?.toLocaleString('es-AR')}
+                              <span className="font-bold text-lg min-w-20 text-right">
+                                ${order.total?.toLocaleString("es-AR")}
                               </span>
                             </div>
                           </div>
@@ -230,22 +290,35 @@ export default function OrdersPage() {
                                   const product = item.product;
                                   const imageUrl = product?.images?.[0]?.url
                                     ? getMediaUrl(product.images[0].url)
-                                    : '/avif/placeholder.avif';
+                                    : "/avif/placeholder.avif";
 
                                   return (
-                                    <div key={index} className="flex gap-3 items-start">
+                                    <div
+                                      key={index}
+                                      className="flex gap-3 items-start"
+                                    >
                                       <div className="h-16 w-16 bg-muted rounded-md overflow-hidden shrink-0 border border-border/50 relative">
                                         <ImgWithFallback
-                                          src={imageUrl || ''}
-                                          alt={product?.name || 'Producto'}
+                                          src={imageUrl || ""}
+                                          alt={product?.name || "Producto"}
                                           className="object-cover w-full h-full"
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm truncate">{product?.name || 'Producto eliminado'}</p>
+                                        <p className="font-medium text-sm truncate">
+                                          {product?.name ||
+                                            "Producto eliminado"}
+                                        </p>
                                         <div className="flex justify-between items-center mt-1">
-                                          <p className="text-xs text-muted-foreground">Cant: {item.quantity}</p>
-                                          <p className="font-semibold text-sm">${item.price?.toLocaleString('es-AR')}</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            Cant: {item.quantity}
+                                          </p>
+                                          <p className="font-semibold text-sm">
+                                            $
+                                            {item.price?.toLocaleString(
+                                              "es-AR",
+                                            )}
+                                          </p>
                                         </div>
                                       </div>
                                     </div>
@@ -263,12 +336,20 @@ export default function OrdersPage() {
                                 </h4>
                                 {order.shippingAddress ? (
                                   <div className="text-muted-foreground pl-6">
-                                    <p>{order.shippingAddress.street} {order.shippingAddress.number}</p>
-                                    <p>{order.shippingAddress.city}, {order.shippingAddress.state}</p>
+                                    <p>
+                                      {order.shippingAddress.street}{" "}
+                                      {order.shippingAddress.number}
+                                    </p>
+                                    <p>
+                                      {order.shippingAddress.city},{" "}
+                                      {order.shippingAddress.state}
+                                    </p>
                                     <p>CP {order.shippingAddress.zipCode}</p>
                                   </div>
                                 ) : (
-                                  <p className="text-muted-foreground pl-6">Retiro en local</p>
+                                  <p className="text-muted-foreground pl-6">
+                                    Retiro en local
+                                  </p>
                                 )}
                               </div>
 
@@ -279,19 +360,37 @@ export default function OrdersPage() {
                                 </h4>
                                 <div className="space-y-2 pl-6">
                                   <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Subtotal</span>
-                                    <span>${order.total?.toLocaleString('es-AR')}</span>
+                                    <span className="text-muted-foreground">
+                                      Subtotal
+                                    </span>
+                                    <span>
+                                      ${order.total?.toLocaleString("es-AR")}
+                                    </span>
                                   </div>
                                   <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Envío</span>
-                                    <span className={order.total >= storeConfig.freeShippingMin ? 'text-green-600 font-medium' : ''}>
-                                      {order.total >= storeConfig.freeShippingMin ? 'Gratis' : 'A convenir'}
+                                    <span className="text-muted-foreground">
+                                      Envío
+                                    </span>
+                                    <span
+                                      className={
+                                        order.total >=
+                                        storeConfig.freeShippingMin
+                                          ? "text-green-600 font-medium"
+                                          : ""
+                                      }
+                                    >
+                                      {order.total >=
+                                      storeConfig.freeShippingMin
+                                        ? "Gratis"
+                                        : "A convenir"}
                                     </span>
                                   </div>
                                   <Separator className="my-2" />
                                   <div className="flex justify-between font-bold text-lg">
                                     <span>Total</span>
-                                    <span className="text-primary text-xl">${order.total?.toLocaleString('es-AR')}</span>
+                                    <span className="text-primary text-xl">
+                                      ${order.total?.toLocaleString("es-AR")}
+                                    </span>
                                   </div>
                                 </div>
                               </div>

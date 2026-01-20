@@ -1,38 +1,5 @@
 import type { Core } from "@strapi/strapi";
 
-// Helper function to send email via Resend API (avoids SMTP port blocking)
-async function sendEmailViaResend(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
-  const apiKey = process.env.SMTP_PASS;
-  const from = process.env.SMTP_FROM || "noreply@22studios.xyz";
-
-  if (!apiKey) {
-    throw new Error("SMTP_PASS (Resend API Key) not configured");
-  }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject,
-      html,
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(`Resend API error: ${JSON.stringify(error)}`);
-  }
-}
-
 export default ({ strapi }: { strapi: Core.Strapi }) => ({
   async send(ctx) {
     try {
@@ -66,6 +33,8 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       const logoUrl = "https://rano.22studios.xyz/webp/rano_logo.webp";
       const frontendUrl =
         process.env.FRONTEND_URL || "https://rano.22studios.xyz";
+
+      const orderService = strapi.service("api::order.order") as any;
 
       // Send email to store
       const storeEmailHtml = `
@@ -142,7 +111,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
           </html>
         `;
 
-      await sendEmailViaResend(
+      await orderService.sendEmail(
         recipientEmail,
         `[Rano Urban] Nuevo mensaje: ${subject}`,
         storeEmailHtml,
@@ -212,7 +181,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
           </html>
         `;
 
-      await sendEmailViaResend(
+      await orderService.sendEmail(
         email,
         "¡Recibimos tu mensaje! - Rano Urban",
         customerEmailHtml,

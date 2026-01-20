@@ -34,14 +34,18 @@ export default {
         filters: { externalReference: paymentData.external_reference },
       });
 
-      const order = Array.isArray(orders) ? orders[0] : orders;
+      const initialOrder = Array.isArray(orders) ? orders[0] : orders;
+
+      // Fetch full order with phone
+      const order = await strapi.entityService.findOne(
+        "api::order.order",
+        initialOrder.id,
+      );
 
       if (!order) {
-        // Log locally, but return 200 to MP to stop retries if logic dictates
         strapi.log.warn(
           `Order not found for payment ${paymentId} ref ${paymentData.external_reference}`,
         );
-        // Return 200 to acknowledge hooked
         return ctx.send({ received: true });
       }
 
@@ -68,74 +72,119 @@ export default {
         "api::store-config.store-config",
       );
       const adminEmail = storeConfig[0]?.contactEmail || "info@ranourban.com";
+      const orderService = strapi.service("api::order.order") as any;
 
       // --- Notificaciones por Email ---
 
       if (newStatus === "paid" && oldStatus !== "paid") {
         // 1. Al Cliente: Confirmación
         try {
-          await strapi.plugins["email"].services.email.send({
-            to: order.email,
-            subject: "¡Gracias por tu compra! - Rano Urban",
-            html: `
-              <h1>Pedido Confirmado</h1>
-              <p>Hola, tu pedido <strong>#${order.id}</strong> ha sido pagado exitosamente.</p>
-              <p>Estamos preparando tus productos para el envío.</p>
+          await orderService.sendEmail(
+            order.email,
+            "¡Gracias por tu compra! - Rano Urban",
+            `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <h1 style="color: #000; margin-bottom: 5px;">Pedido Confirmado</h1>
+                  <p style="color: #666;">¡Hola! Tu pago ha sido procesado exitosamente.</p>
+                </div>
+                
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                  <p style="margin: 0;"><strong>Número de Pedido:</strong> #${order.id}</p>
+                  <p style="margin: 5px 0 0;"><strong>Estado:</strong> Pagado</p>
+                  <p style="margin: 5px 0 0;"><strong>Total:</strong> $${order.total}</p>
+                </div>
+                
+                <p>Estamos preparando tus productos. Te avisaremos cuando el pedido sea enviado.</p>
+                
+                <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #999;">
+                  <p>Rano Urban - Calidad y Precio</p>
+                </div>
+              </div>
             `,
-          });
+          );
         } catch (err) {
           strapi.log.error("Failed to send client success email", err);
         }
 
+        // WhatsApp: Pago Confirmado
+        try {
+          if (order.phone) {
+            await orderService.sendWhatsAppNotification(
+              order.phone,
+              `✅ ¡Buenas noticias! Tu pago del pedido #${order.id} por $${order.total} ha sido confirmado. Estamos preparando tu envío. ¡Gracias por elegir Rano Urban!`,
+            );
+          }
+        } catch (err) {
+          strapi.log.error("Failed to send client success WhatsApp", err);
+        }
+
         // 2. Al Administrador: Nueva Venta
         try {
-          await strapi.plugins["email"].services.email.send({
-            to: adminEmail,
-            subject: `Nueva Venta: Pedido #${order.id}`,
-            html: `
-              <h1>¡Nueva venta recibida!</h1>
-              <p>Se ha confirmado el pago del pedido <strong>#${order.id}</strong>.</p>
-              <p>Cliente: ${order.email}</p>
-              <p>Total: $${order.total}</p>
-              <p>Revisar en el panel de Strapi para gestionar el envío.</p>
+          await orderService.sendEmail(
+            adminEmail,
+            `Nueva Venta: Pedido #${order.id}`,
+            `
+              <div style="font-family: sans-serif; padding: 20px;">
+                <h1 style="color: #22c55e;">¡Nueva venta recibida!</h1>
+                <p>Se ha confirmado el pago del pedido <strong>#${order.id}</strong>.</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+                <p><strong>Cliente:</strong> ${order.email}</p>
+                <p><strong>Total:</strong> $${order.total}</p>
+                <p><strong>Referencia MP:</strong> ${paymentId}</p>
+                <div style="margin-top: 25px;">
+                  <a href="${process.env.STRAPI_URL || "http://localhost:1337"}/admin/content-manager/collection-types/api::order.order/${order.id}" 
+                     style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    Ver Pedido en Strapi
+                  </a>
+                </div>
+              </div>
             `,
-          });
+          );
         } catch (err) {
           strapi.log.error("Failed to send admin notification email", err);
         }
       } else if (newStatus === "pending") {
         // Notificar al cliente sobre el pago pendiente (ej: Rapipago)
         try {
-          await strapi.plugins["email"].services.email.send({
-            to: order.email,
-            subject: "Pedido Recibido - Esperando Pago | Rano Urban",
-            html: `
-              <h1>Estamos esperando tu pago</h1>
-              <p>Hola, hemos recibido tu pedido <strong>#${order.id}</strong>.</p>
-              <p>El mismo se encuentra en estado <strong>Pendiente</strong> hasta que se acredite el pago solicitado.</p>
-              <p>Una vez acreditado, te enviaremos un email de confirmación y prepararemos tu envío.</p>
+          await orderService.sendEmail(
+            order.email,
+            "Pedido Recibido - Esperando Pago | Rano Urban",
+            `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h1 style="text-align: center;">Estamos esperando tu pago</h1>
+                <p>Hola, hemos recibido tu pedido <strong>#${order.id}</strong>.</p>
+                <p>El mismo se encuentra en estado <strong>Pendiente</strong> hasta que se acredite el pago solicitado (por ejemplo, si elegiste Rapipago o Pago Fácil).</p>
+                <p>Una vez acreditado, te enviaremos un email de confirmación y prepararemos tu envío.</p>
+                <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-top: 20px;">
+                  <p style="margin: 0; color: #92400e;"><strong>Importante:</strong> Si ya realizaste el pago, recordá que puede tardar hasta 24hs hábiles en acreditarse.</p>
+                </div>
+              </div>
             `,
-          });
+          );
         } catch (err) {
           strapi.log.error("Failed to send pending email", err);
         }
       } else if (newStatus === "rejected" || newStatus === "cancelled") {
         // Notificar al cliente sobre el pago fallido
         try {
-          await strapi.plugins["email"].services.email.send({
-            to: order.email,
-            subject: "Problema con tu pago - Rano Urban",
-            html: `
-              <div style="font-family: sans-serif; color: #333;">
-                <h1 style="color: #e11d48;">Tu pago no pudo procesarse</h1>
-                <p>Hola, lamentablemente el pago de tu pedido <strong>#${order.id}</strong> fue ${newStatus === "rejected" ? "rechazado" : "cancelado"}.</p>
-                <p>No te preocupes, tus productos han sido reservados por un breve momento, pero el stock se liberará pronto si no se completa la compra.</p>
-                <p>Puedes intentar realizar el pago nuevamente desde nuestra web.</p>
-                <br>
-                <a href="${process.env.FRONTEND_URL || "http://localhost:3000"}/productos" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Volver a la tienda</a>
+          await orderService.sendEmail(
+            order.email,
+            "Problema con tu pago - Rano Urban",
+            `
+              <div style="font-family: sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #fee2e2; border-radius: 10px;">
+                <h1 style="color: #e11d48; text-align: center;">Tu pago no pudo procesarse</h1>
+                <p>Hola, te informamos que el pago para el pedido <strong>#${order.id}</strong> ha sido ${newStatus === "rejected" ? "rechazado" : "cancelado"}.</p>
+                <p>Si el problema persiste, podés intentar con otro medio de pago o contactarnos para ayudarte.</p>
+                <div style="text-align: center; margin-top: 25px;">
+                  <a href="${process.env.FRONTEND_URL || "http://localhost:3000"}/checkout" 
+                     style="background: #e11d48; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    Intentar de nuevo
+                  </a>
+                </div>
               </div>
             `,
-          });
+          );
         } catch (err) {
           strapi.log.error("Failed to send failure email", err);
         }

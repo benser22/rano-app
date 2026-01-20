@@ -93,6 +93,7 @@ export default {
       status: "pending",
       shippingAddress,
       email,
+      phone: shippingAddress?.phone || null,
       externalReference: `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     };
 
@@ -103,9 +104,52 @@ export default {
       };
     }
 
-    const order = await strapi.entityService.create("api::order.order", {
+    // Create Order in Pending State using Strapi 5 Document Service
+    const order = await strapi.documents("api::order.order").create({
       data: orderData,
+      status: "published",
     });
+
+    const orderService = strapi.service("api::order.order") as any;
+    const orderId = order.id;
+
+    // Send "Order Received" email
+    try {
+      await orderService.sendEmail(
+        email,
+        "Hemos recibido tu pedido - Rano Urban",
+        `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+            <h1 style="text-align: center; color: #000;">¡Gracias por tu pedido!</h1>
+            <p>Hola, hemos recibido correctamente tu pedido <strong>#${orderId}</strong>.</p>
+            <p>El siguiente paso es completar el pago para que podamos procesar tu envío.</p>
+            
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+              <p style="margin: 0;"><strong>Número de Pedido:</strong> #${orderId}</p>
+              <p style="margin: 5px 0 0;"><strong>Total a pagar:</strong> $${total}</p>
+            </div>
+            
+            <p>Si aún no has completado el pago en la ventana de MercadoPago, podés hacerlo ahora.</p>
+            <p>Una vez confirmado el pago, te enviaremos otro email de confirmación.</p>
+            
+            <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #999;">
+              <p>Rano Urban - Calidad y Precio</p>
+            </div>
+          </div>
+        `,
+      );
+
+      // WhatsApp Notification
+      const phone = orderData.phone;
+      if (phone) {
+        await orderService.sendWhatsAppNotification(
+          phone,
+          `¡Hola! Gracias por tu pedido #${orderId} en Rano Urban. Estamos esperando la confirmación de tu pago por $${total}. ¡Te avisaremos cuando esté listo!`,
+        );
+      }
+    } catch (err) {
+      strapi.log.error("Failed to send initial notifications", err);
+    }
 
     // Deduct stock (Reservation strategy)
     for (const item of orderItems) {
@@ -159,40 +203,55 @@ export default {
     // Let's use the externalReference generated above.
 
     try {
-      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      let frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      // Remove trailing slash if exists
+      if (frontendUrl.endsWith("/")) {
+        frontendUrl = frontendUrl.slice(0, -1);
+      }
+
       const webhookUrl = process.env.WEBHOOK_URL;
 
-      // Creando preferencia de MP con frontendUrl y webhookUrl (logs removidos)
+      strapi.log.info(`Creating MP Preference for Order #${orderId}`);
+      strapi.log.info(`Frontend URL: ${frontendUrl}`);
+
+      const preferenceBody = {
+        items: infoItems,
+        metadata: {
+          order_id: orderId,
+        },
+        external_reference: order.externalReference || `ORDER-${orderId}`,
+        notification_url: webhookUrl
+          ? `${webhookUrl}/api/webhooks/mercadopago`
+          : undefined,
+        payer: {
+          email: email,
+        },
+        back_urls: {
+          success: `${frontendUrl}/checkout/success`,
+          failure: `${frontendUrl}/checkout/error`,
+          pending: `${frontendUrl}/checkout/pending`,
+        },
+        auto_return: "approved",
+      };
 
       const result = await preference.create({
-        body: {
-          items: infoItems,
-          metadata: {
-            order_id: order.id,
-          },
-          external_reference: order.externalReference,
-          notification_url: webhookUrl
-            ? `${webhookUrl}/api/webhooks/mercadopago`
-            : undefined,
-          payer: {
-            email: email,
-          },
-          back_urls: {
-            success: `${frontendUrl}/checkout/success`,
-            failure: `${frontendUrl}/checkout/error`,
-            pending: `${frontendUrl}/checkout/pending`,
-          },
-          auto_return: "approved",
-        },
+        body: preferenceBody,
       });
 
       return {
         id: result.id,
         init_point: result.init_point,
-        orderId: order.id,
+        orderId: orderId,
       };
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      strapi.log.error("MercadoPago Preference Error:");
+      strapi.log.error(
+        JSON.stringify(
+          error?.response?.data || error?.message || error,
+          null,
+          2,
+        ),
+      );
       return ctx.internalServerError("Failed to create preference");
     }
   },

@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
-import { useStoreConfig } from '@/lib/useStoreConfig';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { getMediaUrl } from '@/lib/api/strapi';
-import { ImgWithFallback } from '@/components/ui/image-with-fallback';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
+import { useAuthStore } from "@/store/authStore";
+import { useStoreConfig } from "@/lib/useStoreConfig";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { getMediaUrl } from "@/lib/api/strapi";
+import { ImgWithFallback } from "@/components/ui/image-with-fallback";
+import { toast } from "sonner";
 import {
   ChevronRight,
   Loader2,
@@ -20,8 +20,8 @@ import {
   CreditCard,
   Truck,
   ShieldCheck,
-  ArrowLeft
-} from 'lucide-react';
+  ArrowLeft,
+} from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -31,13 +31,13 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: Shipping, 2: Review
   const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    phone: '',
-    address: '',
-    city: '',
-    province: '',
-    zip: '',
+    email: "",
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    province: "",
+    zip: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -45,10 +45,10 @@ export default function CheckoutPage() {
   // Pre-fill email if logged in
   useEffect(() => {
     if (user?.email) {
-      setFormData(prev => ({ ...prev, email: user.email }));
+      setFormData((prev) => ({ ...prev, email: user.email }));
     }
     if (user?.username) {
-      setFormData(prev => ({ ...prev, name: user.username }));
+      setFormData((prev) => ({ ...prev, name: user.username }));
     }
   }, [user]);
 
@@ -57,61 +57,69 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [name]: value });
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name } = e.target;
-    setTouched(prev => ({ ...prev, [name]: true }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
     validateField(name, formData[name as keyof typeof formData]);
   };
 
   const validateField = (name: string, value: string): boolean => {
-    let error = '';
+    let error = "";
 
     switch (name) {
-      case 'email':
-        if (!value) error = 'El email es requerido';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Email inválido';
+      case "email":
+        if (!value) error = "El email es requerido";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          error = "Email inválido";
         break;
-      case 'name':
-        if (!value) error = 'El nombre es requerido';
-        else if (value.length < 2) error = 'Nombre muy corto';
+      case "name":
+        if (!value) error = "El nombre es requerido";
+        else if (value.length < 2) error = "Nombre muy corto";
         break;
-      case 'phone':
-        if (!value) error = 'El teléfono es requerido';
-        else if (!/^\d{8,15}$/.test(value.replace(/\D/g, ''))) error = 'Teléfono inválido';
+      case "phone":
+        if (!value) error = "El teléfono es requerido";
+        else if (!/^\d{8,15}$/.test(value.replace(/\D/g, "")))
+          error = "Teléfono inválido";
         break;
-      case 'address':
-        if (!value) error = 'La dirección es requerida';
+      case "address":
+        if (!value) error = "La dirección es requerida";
         break;
-      case 'city':
-        if (!value) error = 'La ciudad es requerida';
+      case "city":
+        if (!value) error = "La ciudad es requerida";
         break;
-      case 'zip':
-        if (!value) error = 'El código postal es requerido';
-        else if (!/^\d{4,5}$/.test(value)) error = 'Código postal inválido (4-5 dígitos)';
+      case "zip":
+        if (!value) error = "El código postal es requerido";
+        else if (!/^\d{4,5}$/.test(value))
+          error = "Código postal inválido (4-5 dígitos)";
         break;
     }
 
-    setErrors(prev => ({ ...prev, [name]: error }));
+    setErrors((prev) => ({ ...prev, [name]: error }));
     return !error;
   };
 
   const validateShipping = (): boolean => {
-    const requiredFields = ['email', 'name', 'phone', 'address', 'city', 'zip'];
+    const requiredFields = ["email", "name", "phone", "address", "city", "zip"];
     let isValid = true;
-    let firstErrorField = '';
+    let firstErrorField = "";
 
     // Mark all required fields as touched
     const newTouched: Record<string, boolean> = {};
-    requiredFields.forEach(field => { newTouched[field] = true; });
-    setTouched(prev => ({ ...prev, ...newTouched }));
+    requiredFields.forEach((field) => {
+      newTouched[field] = true;
+    });
+    setTouched((prev) => ({ ...prev, ...newTouched }));
 
     // Validate each field
     for (const field of requiredFields) {
-      const valid = validateField(field, formData[field as keyof typeof formData]);
+      const valid = validateField(
+        field,
+        formData[field as keyof typeof formData],
+      );
       if (!valid && !firstErrorField) {
         firstErrorField = field;
         isValid = false;
@@ -124,7 +132,7 @@ export default function CheckoutPage() {
     if (firstErrorField) {
       const element = document.getElementById(firstErrorField);
       element?.focus();
-      toast.error('Por favor completá todos los campos requeridos');
+      toast.error("Por favor completá todos los campos requeridos");
     }
 
     return isValid;
@@ -140,39 +148,49 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      const { strapi } = await import('@/lib/api/strapi');
+      const { strapi } = await import("@/lib/api/strapi");
 
-      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const config = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
 
-      const { data } = await strapi.post('/orders/checkout', {
-        items: items.map(i => ({
-          product: i.productId, // Send real numeric/string ID of product
-          id: i.productId, // Fallback
-          quantity: i.quantity,
-          size: i.selectedSize,
-          color: i.selectedColor
-        })),
-        email: formData.email,
-        shippingAddress: {
-          name: formData.name,
-          phone: formData.phone,
-          address: formData.address,
-          city: formData.city,
-          province: formData.province,
-          zip: formData.zip,
+      const { data } = await strapi.post(
+        "/orders/checkout",
+        {
+          items: items.map((i) => ({
+            product: i.productId, // Send real numeric/string ID of product
+            id: i.productId, // Fallback
+            quantity: i.quantity,
+            size: i.selectedSize,
+            color: i.selectedColor,
+          })),
+          email: formData.email,
+          shippingAddress: {
+            name: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            province: formData.province,
+            zip: formData.zip,
+          },
         },
-      }, config);
+        config,
+      );
 
       if (data.init_point) {
         // Redirect to MercadoPago
         window.location.href = data.init_point;
       } else {
-        toast.error('No se pudo generar el link de pago');
+        toast.error("No se pudo generar el link de pago");
         setLoading(false);
       }
     } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast.error(error.response?.data?.error?.message || 'Error al procesar el pedido');
+      console.error("Checkout error:", error);
+      const errorMessage =
+        error.response?.data?.error?.message ||
+        error.message ||
+        "Error al procesar el pedido";
+      toast.error(`Error: ${errorMessage}`);
       setLoading(false);
     }
   };
@@ -206,9 +224,13 @@ export default function CheckoutPage() {
       <div className="bg-secondary text-secondary-foreground py-6">
         <div className="container mx-auto px-4">
           <nav className="flex items-center gap-2 text-sm text-secondary-foreground/60 mb-2">
-            <Link href="/" className="hover:text-secondary-foreground">Inicio</Link>
+            <Link href="/" className="hover:text-secondary-foreground">
+              Inicio
+            </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href="/carrito" className="hover:text-secondary-foreground">Carrito</Link>
+            <Link href="/carrito" className="hover:text-secondary-foreground">
+              Carrito
+            </Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-secondary-foreground">Checkout</span>
           </nav>
@@ -220,18 +242,30 @@ export default function CheckoutPage() {
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center gap-4">
-            <div className={`flex items-center gap-2 ${step >= 1 ? 'text-primary' : 'text-muted-foreground'}`}>
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+            <div
+              className={`flex items-center gap-2 ${step >= 1 ? "text-primary" : "text-muted-foreground"}`}
+            >
+              <div
+                className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 1 ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+              >
                 1
               </div>
-              <span className="hidden sm:inline font-medium">Datos de Envío</span>
+              <span className="hidden sm:inline font-medium">
+                Datos de Envío
+              </span>
             </div>
             <div className="w-12 h-px bg-border" />
-            <div className={`flex items-center gap-2 ${step >= 2 ? 'text-primary' : 'text-muted-foreground'}`}>
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+            <div
+              className={`flex items-center gap-2 ${step >= 2 ? "text-primary" : "text-muted-foreground"}`}
+            >
+              <div
+                className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold ${step >= 2 ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+              >
                 2
               </div>
-              <span className="hidden sm:inline font-medium">Confirmar Pedido</span>
+              <span className="hidden sm:inline font-medium">
+                Confirmar Pedido
+              </span>
             </div>
           </div>
         </div>
@@ -250,7 +284,12 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="email" className={touched.email && errors.email ? 'text-destructive' : ''}>
+                    <Label
+                      htmlFor="email"
+                      className={
+                        touched.email && errors.email ? "text-destructive" : ""
+                      }
+                    >
                       Email *
                     </Label>
                     <Input
@@ -262,7 +301,11 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="email"
-                      className={touched.email && errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.email && errors.email
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                     {touched.email && errors.email && (
                       <p className="text-xs text-destructive">{errors.email}</p>
@@ -270,7 +313,12 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="name" className={touched.name && errors.name ? 'text-destructive' : ''}>
+                    <Label
+                      htmlFor="name"
+                      className={
+                        touched.name && errors.name ? "text-destructive" : ""
+                      }
+                    >
                       Nombre completo *
                     </Label>
                     <Input
@@ -281,7 +329,11 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="name"
-                      className={touched.name && errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.name && errors.name
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                     {touched.name && errors.name && (
                       <p className="text-xs text-destructive">{errors.name}</p>
@@ -289,27 +341,47 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className={touched.phone && errors.phone ? 'text-destructive' : ''}>
-                      Teléfono *
+                    <Label
+                      htmlFor="phone"
+                      className={
+                        touched.phone && errors.phone ? "text-destructive" : ""
+                      }
+                    >
+                      WhatsApp / Teléfono *
                     </Label>
                     <Input
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder="3815555555"
+                      placeholder="Ej: 3815555555"
                       value={formData.phone}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="tel"
-                      className={touched.phone && errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.phone && errors.phone
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
-                    {touched.phone && errors.phone && (
+                    {touched.phone && errors.phone ? (
                       <p className="text-xs text-destructive">{errors.phone}</p>
+                    ) : (
+                      <p className="text-[10px] text-muted-foreground">
+                        Cod. área + número (sin 0 ni 15)
+                      </p>
                     )}
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="address" className={touched.address && errors.address ? 'text-destructive' : ''}>
+                    <Label
+                      htmlFor="address"
+                      className={
+                        touched.address && errors.address
+                          ? "text-destructive"
+                          : ""
+                      }
+                    >
                       Dirección *
                     </Label>
                     <Input
@@ -320,15 +392,26 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="street-address"
-                      className={touched.address && errors.address ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.address && errors.address
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                     {touched.address && errors.address && (
-                      <p className="text-xs text-destructive">{errors.address}</p>
+                      <p className="text-xs text-destructive">
+                        {errors.address}
+                      </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="city" className={touched.city && errors.city ? 'text-destructive' : ''}>
+                    <Label
+                      htmlFor="city"
+                      className={
+                        touched.city && errors.city ? "text-destructive" : ""
+                      }
+                    >
                       Ciudad *
                     </Label>
                     <Input
@@ -339,7 +422,11 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="address-level2"
-                      className={touched.city && errors.city ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.city && errors.city
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                     {touched.city && errors.city && (
                       <p className="text-xs text-destructive">{errors.city}</p>
@@ -359,7 +446,12 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="zip" className={touched.zip && errors.zip ? 'text-destructive' : ''}>
+                    <Label
+                      htmlFor="zip"
+                      className={
+                        touched.zip && errors.zip ? "text-destructive" : ""
+                      }
+                    >
                       Código Postal *
                     </Label>
                     <Input
@@ -370,7 +462,11 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       autoComplete="postal-code"
-                      className={touched.zip && errors.zip ? 'border-destructive focus-visible:ring-destructive' : ''}
+                      className={
+                        touched.zip && errors.zip
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                     {touched.zip && errors.zip && (
                       <p className="text-xs text-destructive">{errors.zip}</p>
@@ -385,7 +481,10 @@ export default function CheckoutPage() {
                       Volver
                     </Button>
                   </Link>
-                  <Button onClick={handleContinue} className="flex-1 gap-2 h-12">
+                  <Button
+                    onClick={handleContinue}
+                    className="flex-1 gap-2 h-12"
+                  >
                     Continuar
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -405,13 +504,20 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="font-medium">{formData.name}</p>
-                      <p className="text-sm text-muted-foreground">{formData.email}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formData.email}
+                      </p>
                       <p className="text-sm text-muted-foreground mt-2">
                         {formData.address}, {formData.city}
-                        {formData.province && `, ${formData.province}`} - CP {formData.zip}
+                        {formData.province && `, ${formData.province}`} - CP{" "}
+                        {formData.zip}
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => setStep(1)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setStep(1)}
+                    >
                       Editar
                     </Button>
                   </div>
@@ -422,12 +528,17 @@ export default function CheckoutPage() {
                   {items.map((item) => {
                     // Try item.image first, then item.images[0].url
                     const rawImageUrl = item.image || item.images?.[0]?.url;
-                    const imageUrl = rawImageUrl ? getMediaUrl(rawImageUrl) : '/avif/placeholder.avif';
+                    const imageUrl = rawImageUrl
+                      ? getMediaUrl(rawImageUrl)
+                      : "/avif/placeholder.avif";
                     return (
-                      <div key={item.id} className="flex items-center gap-3 py-2">
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 py-2"
+                      >
                         <div className="w-16 h-16 bg-muted rounded-md overflow-hidden shrink-0">
                           <ImgWithFallback
-                            src={imageUrl || ''}
+                            src={imageUrl || ""}
                             alt={item.name}
                             className="w-full h-full object-cover"
                           />
@@ -439,7 +550,8 @@ export default function CheckoutPage() {
                           </p>
                         </div>
                         <p className="font-semibold">
-                          ${(item.price * item.quantity).toLocaleString('es-AR')}
+                          $
+                          {(item.price * item.quantity).toLocaleString("es-AR")}
                         </p>
                       </div>
                     );
@@ -448,7 +560,11 @@ export default function CheckoutPage() {
 
                 {/* Payment Button */}
                 <div className="flex gap-4">
-                  <Button variant="outline" onClick={() => setStep(1)} className="gap-2 h-12">
+                  <Button
+                    variant="outline"
+                    onClick={() => setStep(1)}
+                    className="gap-2 h-12"
+                  >
                     <ArrowLeft className="h-4 w-4" />
                     Volver
                   </Button>
@@ -464,7 +580,11 @@ export default function CheckoutPage() {
                       </>
                     ) : (
                       <>
-                        <img src="/mp_logo.png" alt="MercadoPago" className="h-6 w-auto" />
+                        <img
+                          src="/mp_logo.png"
+                          alt="MercadoPago"
+                          className="h-6 w-auto"
+                        />
                         Pagar
                       </>
                     )}
@@ -496,14 +616,19 @@ export default function CheckoutPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
-                    Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} productos)
+                    Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)}{" "}
+                    productos)
                   </span>
-                  <span>${subtotal.toLocaleString('es-AR')}</span>
+                  <span>${subtotal.toLocaleString("es-AR")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Envío</span>
-                  <span className={isFreeShipping ? 'text-green-600 font-medium' : ''}>
-                    {isFreeShipping ? '¡Gratis!' : 'A convenir'}
+                  <span
+                    className={
+                      isFreeShipping ? "text-green-600 font-medium" : ""
+                    }
+                  >
+                    {isFreeShipping ? "¡Gratis!" : "A convenir"}
                   </span>
                 </div>
                 {!isFreeShipping && (
@@ -514,7 +639,8 @@ export default function CheckoutPage() {
                 )}
                 <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
                   <Truck className="h-4 w-4" />
-                  Envío gratis en compras mayores a ${config.freeShippingMin.toLocaleString('es-AR')}
+                  Envío gratis en compras mayores a $
+                  {config.freeShippingMin.toLocaleString("es-AR")}
                 </p>
               </div>
 
@@ -522,7 +648,9 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span className="text-primary">${total.toLocaleString('es-AR')}</span>
+                <span className="text-primary">
+                  ${total.toLocaleString("es-AR")}
+                </span>
               </div>
             </div>
           </div>
