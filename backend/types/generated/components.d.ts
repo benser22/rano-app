@@ -7,11 +7,13 @@ export interface OrderOrderItem extends Struct.ComponentSchema {
     icon: 'shopping-cart';
   };
   attributes: {
+    color: Schema.Attribute.String;
     price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
     quantity: Schema.Attribute.Integer &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<1>;
+    size: Schema.Attribute.String;
   };
 }
 

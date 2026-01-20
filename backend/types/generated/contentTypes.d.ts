@@ -622,6 +622,8 @@ export interface ApiStoreConfigStoreConfig extends Struct.SingleTypeSchema {
     shippingCost: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1500>;
     storeName: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Rano Urban'>;
+    tiktokUrl: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'https://www.tiktok.com/@ranourban'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
