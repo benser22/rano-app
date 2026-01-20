@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ChevronRight, User, Package, ShoppingBag, Loader2, MapPin, CreditCard, Truck } from 'lucide-react';
+import { useStoreConfig } from '@/lib/useStoreConfig';
 import {
   Accordion,
   AccordionContent,
@@ -48,6 +49,7 @@ interface Order {
 export default function OrdersPage() {
   const router = useRouter();
   const { user, isAuthenticated, isHydrated, token } = useAuthStore();
+  const { config: storeConfig } = useStoreConfig();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
@@ -282,7 +284,9 @@ export default function OrdersPage() {
                                   </div>
                                   <div className="flex justify-between">
                                     <span className="text-muted-foreground">Envío</span>
-                                    <span>Gratis</span>
+                                    <span className={order.total >= storeConfig.freeShippingMin ? 'text-green-600 font-medium' : ''}>
+                                      {order.total >= storeConfig.freeShippingMin ? 'Gratis' : 'A convenir'}
+                                    </span>
                                   </div>
                                   <Separator className="my-2" />
                                   <div className="flex justify-between font-bold text-lg">

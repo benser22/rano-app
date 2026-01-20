@@ -112,7 +112,7 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
             ? data.data.navbarCategories
             : DEFAULT_NAVBAR_CATEGORIES,
         freeShippingMin: data.data.freeShippingMin ?? 30000,
-        shippingCost: data.data.shippingCost ?? 1500,
+        shippingCost: data.data.shippingCost ?? 0,
         address:
           data.data.address || "Av. Belgrano 3659, San Miguel de Tucumán",
         whatsappNumber: data.data.whatsappNumber || "3815010399",
@@ -137,7 +137,7 @@ export async function getStoreConfig(): Promise<StoreConfigData> {
     storeName: "Rano Urban",
     navbarCategories: DEFAULT_NAVBAR_CATEGORIES,
     freeShippingMin: 30000,
-    shippingCost: 1500,
+    shippingCost: 0,
     address: "Av. Belgrano 3659, San Miguel de Tucumán",
     whatsappNumber: "3815010399",
     phone: "+54 381 501-0399",

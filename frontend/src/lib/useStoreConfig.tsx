@@ -14,7 +14,7 @@ const DEFAULT_CONFIG = {
   whatsappNumber: "3815010399",
   contactEmail: "info@ranourban.com",
   freeShippingMin: 30000,
-  shippingCost: 1500,
+  shippingCost: 0,
   hoursWeekdays: "Lunes a Viernes: 9:00 - 20:00",
   hoursSaturday: "Sábados: 10:00 - 14:00",
   instagramUrl: "https://www.instagram.com/ranosurb/",

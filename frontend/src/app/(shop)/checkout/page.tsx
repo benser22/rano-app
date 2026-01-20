@@ -179,8 +179,9 @@ export default function CheckoutPage() {
 
   const { config } = useStoreConfig();
   const subtotal = getTotal();
-  const shipping = subtotal >= config.freeShippingMin ? 0 : config.shippingCost;
-  const total = subtotal + shipping;
+  const isFreeShipping = subtotal >= config.freeShippingMin;
+  const shipping = 0; // Shipping is 0 for calculation (agreed later or free)
+  const total = subtotal;
 
   if (items.length === 0) {
     return (
@@ -501,16 +502,20 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Envío</span>
-                  <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
-                    {shipping === 0 ? '¡Gratis!' : `$${shipping.toLocaleString('es-AR')}`}
+                  <span className={isFreeShipping ? 'text-green-600 font-medium' : ''}>
+                    {isFreeShipping ? '¡Gratis!' : 'A convenir'}
                   </span>
                 </div>
-                {shipping > 0 && (
-                  <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
+                {!isFreeShipping && (
+                  <p className="text-xs text-muted-foreground/70 flex items-center gap-1 italic">
                     <Truck className="h-4 w-4" />
-                    Envío gratis en compras mayores a ${config.freeShippingMin.toLocaleString('es-AR')}
+                    El costo se informará según la zona
                   </p>
                 )}
+                <p className="text-xs text-muted-foreground/70 flex items-center gap-1">
+                  <Truck className="h-4 w-4" />
+                  Envío gratis en compras mayores a ${config.freeShippingMin.toLocaleString('es-AR')}
+                </p>
               </div>
 
               <Separator className="my-4" />
